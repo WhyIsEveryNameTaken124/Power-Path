@@ -1,0 +1,44 @@
+<resources>
+    <!--    Titles-->
+    <string name="app_name">Power Path</string>
+    <string name="text_filters">Filters</string>
+    <!--    Texts-->
+    <string name="text_email_address">Email address</string>
+    <string name="text_password">Password</string>
+    <string name="text_charging_power">Charging Power</string>
+    <string name="text_connector_types">Connector Types</string>
+    <string name="text_networks">Networks</string>
+    <string name="text_ratings">Ratings</string>
+    <string name="text_station_count">Station Count</string>
+    <string name="text_payment_type">Payment Type</string>
+    <string name="text_two_stars_or_more">2 stars or more</string>
+    <string name="text_three_stars_or_more">3 stars or more</string>
+    <string name="text_four_stars_or_more">4 stars or more</string>
+    <string name="text_five_stars">5 stars</string>
+    <string name="text_two_or_more">2 or more</string>
+    <string name="text_four_or_more">4 or more</string>
+    <string name="text_six_or_more">6 or more</string>
+    <string name="text_any">Any</string>
+    <string name="text_card">Via credit or debit card</string>
+    <string name="text_free">Free to use</string>
+    <string name="text_save">Save</string>
+    <string name="text_from">From</string>
+    <string name="text_to">To</string>
+    <string name="text_select_minimum_power">Select Minimum Power</string>
+    <string name="text_select_maximum_power">Select Maximum Power</string>
+    <!--    Errors-->
+    <string name="text_enter_valid_email">Please enter a valid email address!</string>
+    <string name="text_email_already_used">This email is already in use</string>
+    <string name="text_password_must_be_between_8_24">Password must be between 8 and 24 characters long</string>
+    <string name="text_password_must_contain_special_symbol">Password must contain at least one special symbol</string>
+    <string name="text_password_must_contain_number">Password must contain at least one number</string>
+    <string name="text_password_must_contain_uppercase">Password must contain at least one uppercase letter</string>
+    <string name="text_sign_up">Sign Up</string>
+    <string name="text_log_in">Log In</string>
+    <string name="text_forgot_password">Forgot password?</string>
+    <string name="text_remember_me">Remember me</string>
+    <string name="text_have_account">Already have an account? Log in</string>
+    <string name="text_oops_something_went_wrong">Oops! Something went wrong</string>
+    <string name="text_no_email">Please enter an email</string>
+    <string name="text_no_password">Please enter a password</string>
+</resources>

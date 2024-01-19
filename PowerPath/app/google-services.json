@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "58511186094",
+    "project_id": "powerpath-adb50",
+    "storage_bucket": "powerpath-adb50.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58511186094:android:f8517d54e840ad368eb53f",
+        "android_client_info": {
+          "package_name": "com.example.powerpath"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvcYHwCTo4AmKrgOuIkxssrnoxwX14Hs4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

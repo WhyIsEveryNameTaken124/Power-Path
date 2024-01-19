@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttonSave"
+        android:layout_alignParentTop="true">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".FiltersActivity"
+            android:fitsSystemWindows="true">
+            <LinearLayout
+                android:id="@+id/llChargingPower"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+                <!--no clue, figure out later-->
+                <TextView
+                    android:id="@+id/tvChargingPower"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/text_charging_power"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvFrom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/text_from"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvValueFrom"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/edit_text_border"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="--"
+                        android:textSize="40sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/text_to"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvValueTo"
+                        android:layout_width="70dp"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_text_border"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:text="--"
+                        android:textSize="40sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSeparator1"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <LinearLayout
+                android:id="@+id/llConnectorTypes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvConnectorTypes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_connector_types"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/ivConnectorTypes"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/arrow_forward" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llSeparator2"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <LinearLayout
+                android:id="@+id/llNetworks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvNetworks"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_networks"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/ivNetworks"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/arrow_forward" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llSeparator3"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <LinearLayout
+                android:id="@+id/llRatings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvRatings"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_ratings"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/ivRatings"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/arrow_forward" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rgRatings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                tools:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/rating_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_two_stars_or_more" />
+
+                <RadioButton
+                    android:id="@+id/rating_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_three_stars_or_more" />
+
+                <RadioButton
+                    android:id="@+id/rating_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_four_stars_or_more" />
+
+                <RadioButton
+                    android:id="@+id/rating_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_five_stars" />
+
+                <RadioButton
+                    android:id="@+id/rating_any"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_any" />
+            </RadioGroup>
+            <LinearLayout
+                android:id="@+id/llSeparator4"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <LinearLayout
+                android:id="@+id/llStationCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvStationCount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_station_count"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/ivStationCount"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/arrow_forward" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rgStationCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                tools:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/station_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_two_or_more" />
+
+                <RadioButton
+                    android:id="@+id/station_4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_four_or_more" />
+
+                <RadioButton
+                    android:id="@+id/station_6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_six_or_more" />
+
+                <RadioButton
+                    android:id="@+id/station_any"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_any" />
+            </RadioGroup>
+            <LinearLayout
+                android:id="@+id/llSeparator5"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <LinearLayout
+                android:id="@+id/llPaymentType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvPaymentType"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_payment_type"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:id="@+id/ivPaymentType"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="20dp"
+                    android:importantForAccessibility="no"
+                    android:src="@mipmap/arrow_forward" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPaymentOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:orientation="vertical"
+                tools:visibility="gone">
+
+                <CheckBox
+                    android:id="@+id/checkBoxCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_card" />
+
+                <CheckBox
+                    android:id="@+id/checkBoxFree"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_free" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/text_save" />
+</RelativeLayout>
