@@ -8,6 +8,7 @@ import android.os.Handler
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -19,6 +20,16 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okio.IOException
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class FiltersActivity : AppCompatActivity() {
@@ -79,6 +90,8 @@ class FiltersActivity : AppCompatActivity() {
             ) { dialog, item ->
                 val pattern = Regex("""(\d+)kW""")
                 selectedMinPower = pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
+                binding.tvValueFrom.textSize = 18f
+                binding.tvValueFrom.text = selectedMinPower.toString()
                 dialog.dismiss()
             }
             val alert: AlertDialog = builder.create()
@@ -91,8 +104,9 @@ class FiltersActivity : AppCompatActivity() {
                 powerOptions, -1
             ) { dialog, item ->
                 val pattern = Regex("""(\d+)kW""")
-                selectedMaxPower =
-                    pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
+                selectedMaxPower = pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
+                binding.tvValueFrom.textSize = 18f
+                binding.tvValueTo.text = selectedMaxPower.toString()
                 dialog.dismiss()
             }
             val alert: AlertDialog = builder.create()
@@ -226,6 +240,41 @@ class FiltersActivity : AppCompatActivity() {
         return true
     }
 
+    private fun saveFilters(email :String, powerRange: IntArray, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean) {
+        val jsonObject = JSONObject()
+        jsonObject.put("email", email)
+        jsonObject.put("power_range", powerRange)
+        jsonObject.put("connector_type", connectorType)
+        jsonObject.put("networks", networks)
+        jsonObject.put("minimal_rating", minRating)
+        jsonObject.put("station_count", minStationCount)
+        jsonObject.put("paid", paid)
+        jsonObject.put("free", free)
+
+        val mediaType = "application/json; charset=utf-8".toMediaType()
+        val requestBody = jsonObject.toString().toRequestBody(mediaType)
+
+        val request = Request.Builder()
+            .url("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_filters")
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "save filters error: $e")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d("===", "save filters error: ${response.message}")
+                } else {
+                    Log.d("===", "save filters successful: ${response.message}")
+                }
+            }
+        })
+    }
+
     private fun onSave() {
         if (!validateFilters()) return
         val email = DataManager.email
@@ -252,6 +301,6 @@ class FiltersActivity : AppCompatActivity() {
         }
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
-        //TODO send to BLL
+        saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
     }
 }
