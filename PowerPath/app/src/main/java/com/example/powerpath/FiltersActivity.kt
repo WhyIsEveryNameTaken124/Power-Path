@@ -22,7 +22,9 @@ import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -105,7 +107,7 @@ class FiltersActivity : AppCompatActivity() {
             ) { dialog, item ->
                 val pattern = Regex("""(\d+)kW""")
                 selectedMaxPower = pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
-                binding.tvValueFrom.textSize = 18f
+                binding.tvValueTo.textSize = 18f
                 binding.tvValueTo.text = selectedMaxPower.toString()
                 dialog.dismiss()
             }
@@ -179,13 +181,22 @@ class FiltersActivity : AppCompatActivity() {
         binding.llPaymentType.setOnClickListener(clickListener)
 
         binding.rgRatings.setOnCheckedChangeListener { _, checkedId ->
-            val radioButton = findViewById<RadioButton>(checkedId)
-            selectedRating = binding.rgRatings.indexOfChild(radioButton)
+            when (checkedId) {
+                binding.rating2.id -> selectedRating = 2
+                binding.rating3.id -> selectedRating = 3
+                binding.rating4.id -> selectedRating = 4
+                binding.rating5.id -> selectedRating = 5
+                binding.ratingAny.id -> selectedRating = 0
+            }
         }
 
         binding.rgStationCount.setOnCheckedChangeListener { _, checkedId ->
-            val radioButton = findViewById<RadioButton>(checkedId)
-            selectedStationCount = binding.rgRatings.indexOfChild(radioButton)
+            when (checkedId) {
+                binding.station2.id -> selectedStationCount = 2
+                binding.station4.id -> selectedStationCount = 4
+                binding.station6.id -> selectedStationCount = 6
+                binding.stationAny.id -> selectedStationCount = 1
+            }
         }
 
         binding.buttonSave.setOnClickListener {
@@ -240,22 +251,71 @@ class FiltersActivity : AppCompatActivity() {
         return true
     }
 
-    private fun saveFilters(email :String, powerRange: IntArray, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean) {
-        val jsonObject = JSONObject()
-        jsonObject.put("email", email)
-        jsonObject.put("power_range", powerRange)
-        jsonObject.put("connector_type", connectorType)
-        jsonObject.put("networks", networks)
-        jsonObject.put("minimal_rating", minRating)
-        jsonObject.put("station_count", minStationCount)
-        jsonObject.put("paid", paid)
-        jsonObject.put("free", free)
-
-        val mediaType = "application/json; charset=utf-8".toMediaType()
-        val requestBody = jsonObject.toString().toRequestBody(mediaType)
+    private fun getFilters() {
+        val url = HttpUrl.Builder()
+            .scheme("https")
+            .host("power-path-backend-3e6dc9fdeee0.herokuapp.com")
+            .addPathSegment("get_filters")
+            .addQueryParameter("email", DataManager.email)
+            .build()
 
         val request = Request.Builder()
-            .url("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_filters")
+            .url(url)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d(">>>", "get filters error: $e")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d(">>>", "get filters error: ${response.message}")
+                } else {
+                    val responseData = response.body?.string()
+                    val jsonObject = JSONObject(responseData.toString())
+                    val powerRangeMin = jsonObject.optDouble("power_range_min", 0.0)
+                    val powerRangeMax = jsonObject.optDouble("power_range_max", 0.0)
+                    val connectorType = jsonObject.optString("connector_type")
+
+                    val networksArray = jsonObject.optJSONArray("networks")
+                    val networks = mutableListOf<String>()
+                    if (networksArray != null) {
+                        for (i in 0 until networksArray.length()) {
+                            networks.add(networksArray.optString(i))
+                        }
+                    }
+
+                    val minimalRating = jsonObject.optDouble("minimal_rating", 0.0)
+                    val stationCount = jsonObject.optInt("station_count", 0)
+                    val paid = jsonObject.optBoolean("paid", false)
+                    val free = jsonObject.optBoolean("free", false)
+                }
+            }
+        })
+    }
+
+    private fun saveFilters(email :String, powerRange: Pair<Int, Int>, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_filters"
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("power_range", JSONArray().apply {
+                put(powerRange.first)
+                put(powerRange.second)
+            })
+            put("connector_type", connectorType)
+            put("networks", JSONArray(networks))
+            put("minimal_rating", minRating)
+            put("station_count", minStationCount)
+            put("paid", paid)
+            put("free", free)
+        }
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
             .post(requestBody)
             .build()
 
@@ -278,27 +338,14 @@ class FiltersActivity : AppCompatActivity() {
     private fun onSave() {
         if (!validateFilters()) return
         val email = DataManager.email
-        val powerRange = intArrayOf(
+        val powerRange = Pair(
             if (binding.tvValueFrom.text.toString() == "--") 0 else selectedMinPower,
             if (binding.tvValueTo.text.toString() == "--") 0 else selectedMaxPower
         )
         val connectorType = DataManager.connectorType
         val networks = DataManager.selectedNetworks
-        val minRating = when (selectedRating) {
-            0 -> 2
-            1 -> 3
-            2 -> 4
-            3 -> 5
-            4 -> 0
-            else -> 0
-        }
-        val minStationCount = when (selectedStationCount) {
-            0 -> 2
-            1 -> 4
-            2 -> 6
-            3 -> 1
-            else -> 1
-        }
+        val minRating = selectedRating
+        val minStationCount = selectedStationCount
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
