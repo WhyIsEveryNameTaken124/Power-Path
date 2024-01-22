@@ -246,9 +246,31 @@ class FiltersActivity : AppCompatActivity() {
         imageView.startAnimation(rotateAnimation)
     }
 
-    private fun validateFilters(): Boolean {
-        //TODO validate, return errors
-        return true
+    private fun validateFilters(powerRange: Pair<Int, Int>, connectorType: String): Boolean {
+        var isValid = true
+        if (powerRange.first > powerRange.second) {
+            AlertDialog.Builder(this@FiltersActivity)
+                .setTitle(resources.getString(R.string.text_error))
+                .setMessage(resources.getString(R.string.text_please_select_valid_range))
+                .setNeutralButton(resources.getString(R.string.text_ok)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+            isValid = false
+        }
+        if (connectorType == "") {
+            AlertDialog.Builder(this@FiltersActivity)
+                .setTitle(resources.getString(R.string.text_error))
+                .setMessage(resources.getString(R.string.text_please_select_connector_type))
+                .setNeutralButton(resources.getString(R.string.text_ok)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+            isValid = false
+        }
+        return isValid
     }
 
     private fun getFilters() {
@@ -336,7 +358,6 @@ class FiltersActivity : AppCompatActivity() {
     }
 
     private fun onSave() {
-        if (!validateFilters()) return
         val email = DataManager.email
         val powerRange = Pair(
             if (binding.tvValueFrom.text.toString() == "--") 0 else selectedMinPower,
@@ -348,6 +369,7 @@ class FiltersActivity : AppCompatActivity() {
         val minStationCount = selectedStationCount
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
+        if (!validateFilters(powerRange, connectorType)) return
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
     }
 }

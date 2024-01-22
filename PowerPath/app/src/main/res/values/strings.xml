@@ -26,6 +26,12 @@
     <string name="text_to">To</string>
     <string name="text_select_minimum_power">Select Minimum Power</string>
     <string name="text_select_maximum_power">Select Maximum Power</string>
+    <string name="text_sign_up">Sign Up</string>
+    <string name="text_log_in">Log In</string>
+    <string name="text_forgot_password">Forgot password?</string>
+    <string name="text_remember_me">Remember me</string>
+    <string name="text_have_account">Already have an account? Log in</string>
+    <string name="text_ok">Ok</string>
     <!--    Errors-->
     <string name="text_enter_valid_email">Please enter a valid email address!</string>
     <string name="text_email_already_used">This email is already in use</string>
@@ -33,12 +39,10 @@
     <string name="text_password_must_contain_special_symbol">Password must contain at least one special symbol</string>
     <string name="text_password_must_contain_number">Password must contain at least one number</string>
     <string name="text_password_must_contain_uppercase">Password must contain at least one uppercase letter</string>
-    <string name="text_sign_up">Sign Up</string>
-    <string name="text_log_in">Log In</string>
-    <string name="text_forgot_password">Forgot password?</string>
-    <string name="text_remember_me">Remember me</string>
-    <string name="text_have_account">Already have an account? Log in</string>
     <string name="text_oops_something_went_wrong">Oops! Something went wrong</string>
     <string name="text_no_email">Please enter an email</string>
     <string name="text_no_password">Please enter a password</string>
+    <string name="text_error">Error</string>
+    <string name="text_please_select_valid_range">Please select a valid range for charging power.</string>
+    <string name="text_please_select_connector_type">Please select a connector type.</string>
 </resources>
