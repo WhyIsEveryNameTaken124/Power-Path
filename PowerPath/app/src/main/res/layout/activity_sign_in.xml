@@ -46,7 +46,7 @@
                 android:id="@+id/tvEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Email adress:" />
+                android:text="@string/text_email_address" />
 
             <EditText
                 android:id="@+id/etEmail"
@@ -55,7 +55,7 @@
                 android:background="@drawable/edit_text_border"
                 android:ems="10"
                 android:inputType="textEmailAddress"
-                android:textSize="14sp" />
+                android:textSize="14sp"/>
 
             <TextView
                 android:id="@+id/tvEmailError"
@@ -84,7 +84,7 @@
                 android:id="@+id/tvPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Password:" />
+                android:text="@string/text_password" />
 
             <EditText
                 android:id="@+id/etPassword"
@@ -110,7 +110,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:text="@string/text_forgot_password"
-                android:textAlignment="textEnd"
                 android:textColor="@color/grey"
                 android:textSize="14sp"
                 android:visibility="gone" />
@@ -132,7 +131,6 @@
             android:layout_marginStart="40dp"
             android:layout_marginBottom="80dp"
             android:background="@drawable/button"
-            android:backgroundTint="@color/keese_blue"
             android:text="@string/text_sign_up"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"

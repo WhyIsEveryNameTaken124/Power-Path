@@ -3,8 +3,8 @@
     <string name="app_name">Power Path</string>
     <string name="text_filters">Filters</string>
     <!--    Texts-->
-    <string name="text_email_address">Email address</string>
-    <string name="text_password">Password</string>
+    <string name="text_email_address">Email address:</string>
+    <string name="text_password">Password:</string>
     <string name="text_charging_power">Charging Power</string>
     <string name="text_connector_types">Connector Types</string>
     <string name="text_networks">Networks</string>
