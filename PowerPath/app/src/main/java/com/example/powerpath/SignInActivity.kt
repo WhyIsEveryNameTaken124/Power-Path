@@ -19,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -32,7 +31,6 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.IOException
-import org.json.JSONArray
 import org.json.JSONObject
 
 
@@ -52,15 +50,9 @@ class SignInActivity : AppCompatActivity() {
 
     private var mode = 0 //0 = signup, 1 = login
 
-    private lateinit var firestore: FirebaseFirestore
-
-    private lateinit var sharedPreferences: SharedPreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-
-        firestore = FirebaseFirestore.getInstance()
 
         window.statusBarColor = Color.TRANSPARENT
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -86,10 +78,7 @@ class SignInActivity : AppCompatActivity() {
                 if (!android.util.Patterns.EMAIL_ADDRESS.matcher(etEmail.text.toString()).matches()) {
                     tvEmailError.visibility = View.VISIBLE
                     tvEmailError.text = resources.getText(R.string.text_enter_valid_email)
-                } else if (mode == 0 && isEmailUsed()) {
-                    tvEmailError.visibility = View.VISIBLE
-                    tvEmailError.text = resources.getText(R.string.text_email_already_used)
-                } else {
+                }  else {
                     tvEmailError.visibility = View.GONE
                 }
             }
@@ -112,11 +101,9 @@ class SignInActivity : AppCompatActivity() {
             }
 
             if (mode == 0) {
-                saveCredentials()
-            }
-
-            if (tvEmailError.visibility != View.VISIBLE && tvPasswordError.visibility!= View.VISIBLE) {
                 doSignUp()
+            } else {
+                doLogIn()
             }
         }
     }
@@ -128,11 +115,9 @@ class SignInActivity : AppCompatActivity() {
         val password = sharedPreferences.getString("password", "")
         etEmail.setText(email)
         etPassword.setText(password)
-        if (email != null && password != null) {
-            doLogIn()
-        }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         super.onBackPressed()
         changeToSignUp()
@@ -168,11 +153,6 @@ class SignInActivity : AppCompatActivity() {
         tvLogIn.visibility = View.VISIBLE
     }
 
-    private fun getPasswordFromEmail(email: String): String {
-        //TODO
-        return ""
-    }
-
     private fun forgotPasswordAction() {
         //TODO
         //a.se
@@ -203,15 +183,6 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun isEmailUsed(): Boolean {
-        //TODO
-        return false
-    }
-
-    private fun saveCredentials() {
-        //TODO
-    }
-
     private fun validateFields(): Boolean {
         if (etEmail.text.isNullOrEmpty()) {
             Toast.makeText(this@SignInActivity, R.string.text_no_email, Toast.LENGTH_SHORT).show()
@@ -226,18 +197,18 @@ class SignInActivity : AppCompatActivity() {
 
     private fun doSignUp() {
         if (signup(etEmail.text.toString(), etPassword.text.toString())) {
-            //TODO proceed
+            Toast.makeText(this@SignInActivity, "signup success", Toast.LENGTH_SHORT).show()
         } else {
-            //TODO show error
+            Toast.makeText(this@SignInActivity, "signup error", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun doLogIn() {
         GlobalScope.launch(Dispatchers.Main) {
             if (login(etEmail.text.toString(), etPassword.text.toString())) {
-                //TODO proceed
+                Toast.makeText(this@SignInActivity, "login success", Toast.LENGTH_SHORT).show()
             } else {
-                //TODO show error
+                Toast.makeText(this@SignInActivity, "login error", Toast.LENGTH_SHORT).show()
             }
         }
     }
