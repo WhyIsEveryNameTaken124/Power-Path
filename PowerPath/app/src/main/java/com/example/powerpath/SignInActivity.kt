@@ -1,6 +1,5 @@
 package com.example.powerpath
 
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
@@ -155,7 +154,6 @@ class SignInActivity : AppCompatActivity() {
 
     private fun forgotPasswordAction() {
         //TODO
-        //a.se
     }
 
     private fun setLogInText() {
@@ -196,11 +194,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doSignUp() {
-        if (signup(etEmail.text.toString(), etPassword.text.toString())) {
-            Toast.makeText(this@SignInActivity, "signup success", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this@SignInActivity, "signup error", Toast.LENGTH_SHORT).show()
-        }
+        signup(etEmail.text.toString(), etPassword.text.toString())
     }
 
     private fun doLogIn() {
@@ -213,13 +207,12 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signup(email :String, password: String): Boolean {
+    private fun signup(email :String, password: String) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/signup"
         val jsonBody = JSONObject().apply {
             put("email", email)
             put("password", password)
         }
-        var res = false
 
         val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 
@@ -232,18 +225,19 @@ class SignInActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.d("===", "signup error: $e")
+                //TODO
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
                     Log.d("===", "signup error: ${response.message}")
+                    //TODO
                 } else {
                     Log.d("===", "signup successful: ${response.message}")
-                    res = true
+                    //TODO
                 }
             }
         })
-        return res
     }
 
     private suspend fun login(email :String, password: String): Boolean {
