@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         supportActionBar?.hide()
 
         if (savedInstanceState == null) {
-            val intent = Intent(this, FiltersActivity::class.java)
+            val intent = Intent(this, SignInActivity::class.java)
             startActivity(intent)
         }
 

@@ -10,6 +10,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -19,6 +20,20 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
+import okio.IOException
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 class SignInActivity : AppCompatActivity() {
@@ -210,42 +225,81 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doSignUp() {
-        val user: MutableMap<String, Any> = mutableMapOf()
-        user["email"] = etEmail.text
-        user["password"] = etPassword.text
-
-        firestore.collection("users")
-            .add(user)
-            .addOnSuccessListener { _ ->
-                Toast.makeText(this@SignInActivity, "Yes", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { _ ->
-                Toast.makeText(this@SignInActivity, "No", Toast.LENGTH_SHORT).show()
-            }
+        if (signup(etEmail.text.toString(), etPassword.text.toString())) {
+            //TODO proceed
+        } else {
+            //TODO show error
+        }
     }
 
     private fun doLogIn() {
-//        db.collection("client")
-//            .get()
-//            .addOnCompleteListener { task ->
-//                if (task.isSuccessful) {
-//                    for (doc in task.result!!) {
-//                        val a = doc.getString("Email")
-//                        val b = doc.getString("Password")
-//                        val a1 = etEmail.text.toString().trim()
-//                        val b1 = etPassword.text.toString().trim()
-//
-//                        if (a.equals(a1, ignoreCase = true) && b == b1) {
-//                            val home = Intent(this@SignInActivity, MainActivity::class.java)
-//                            startActivity(home)
-//                            Toast.makeText(this@SignInActivity, "Logged In", Toast.LENGTH_SHORT).show()
-//                            break
-//                        } else {
-//                            Toast.makeText(this@SignInActivity, "Cannot login, incorrect Email and Password", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-//                }
-//            }
+        GlobalScope.launch(Dispatchers.Main) {
+            if (login(etEmail.text.toString(), etPassword.text.toString())) {
+                //TODO proceed
+            } else {
+                //TODO show error
+            }
+        }
+    }
+
+    private fun signup(email :String, password: String): Boolean {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/signup"
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("password", password)
+        }
+        var res = false
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "signup error: $e")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d("===", "signup error: ${response.message}")
+                } else {
+                    Log.d("===", "signup successful: ${response.message}")
+                    res = true
+                }
+            }
+        })
+        return res
+    }
+
+    private suspend fun login(email :String, password: String): Boolean {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/login"
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("password", password)
+        }
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                response.isSuccessful
+            } catch (e: IOException) {
+                Log.d("===", "signup error: $e")
+                false
+            }
+        }
     }
 }
 
