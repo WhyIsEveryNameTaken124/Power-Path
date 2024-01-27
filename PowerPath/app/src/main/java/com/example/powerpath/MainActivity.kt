@@ -1,6 +1,7 @@
 package com.example.powerpath
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,6 +31,8 @@ import okio.IOException
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private lateinit var filtersButton: FloatingActionButton
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -43,10 +47,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
         supportActionBar?.hide()
 
-//        if (savedInstanceState == null) {
-//            val intent = Intent(this, SignInActivity::class.java)
-//            startActivity(intent)
-//        }
+        filtersButton = findViewById(R.id.buttonFilters)
+        filtersButton.setOnClickListener {
+            val intent = Intent(this, FiltersActivity::class.java)
+            startActivity(intent)
+        }
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment?
