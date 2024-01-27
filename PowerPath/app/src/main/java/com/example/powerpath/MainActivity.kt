@@ -1,7 +1,6 @@
 package com.example.powerpath
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -16,8 +15,18 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-
+import com.google.android.gms.maps.model.PolylineOptions
+import com.google.maps.android.PolyUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okio.IOException
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -34,10 +43,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
         supportActionBar?.hide()
 
-        if (savedInstanceState == null) {
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
-        }
+//        if (savedInstanceState == null) {
+//            val intent = Intent(this, SignInActivity::class.java)
+//            startActivity(intent)
+//        }
 
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment?
@@ -57,7 +66,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener(this) { location ->
                     if (location != null) {
-                        // Use the obtained location to update the camera position
                         val currentLatLng = LatLng(
                             location.latitude,
                             location.longitude
@@ -65,6 +73,27 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18f))
                     }
                 }
+
+            GlobalScope.launch {
+                val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString("42.65030150660556,23.381500463654387", "42.65257491466009,23.382200638366317"))
+
+                withContext(Dispatchers.Main) {
+                    googleMap.addPolyline(
+                        PolylineOptions().addAll(decodedPath).width(10f).color(Color.BLUE)
+                    )
+
+                    val builder = LatLngBounds.Builder()
+                    for (latLng in decodedPath) {
+                        builder.include(latLng)
+                    }
+
+                    val bounds = builder.build()
+                    val padding = 100
+
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+                }
+            }
+
         } else {
             ActivityCompat.requestPermissions(
                 this,
@@ -95,6 +124,47 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 mapFragment?.getMapAsync(this)
             } else {
                 // Permission denied, handle accordingly (e.g., show a message)
+            }
+        }
+    }
+    private suspend fun extractOverviewPolylineString(start: String, destination: String): String? {
+        val jsonResponse = getPath(start, destination)
+        try {
+            val jsonObj = JSONObject(jsonResponse)
+            val routes = jsonObj.getJSONArray("routes")
+            if (routes.length() > 0) {
+                val route = routes.getJSONObject(0)
+                val overviewPolyline = route.getJSONObject("overview_polyline")
+                return overviewPolyline.getString("points")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null //add error handling so app doesn't crash pls
+    }
+
+    private suspend fun getPath(start: String, destination: String): String? {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_path?start=$start&destination=$destination"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        val client = OkHttpClient()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    response.body?.string()
+                } else {
+                    Log.d("===", "getPath error: HTTP error code: ${response.code}")
+                    null
+                }
+            } catch (e: IOException) {
+                Log.d("===", "getPath error: $e")
+                null
             }
         }
     }
