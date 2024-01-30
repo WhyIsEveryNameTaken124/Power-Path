@@ -15,16 +15,14 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.RotateAnimation
 import android.widget.ImageView
-import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import com.example.powerpath.api.UserFilter
 import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.HttpUrl
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -78,6 +76,7 @@ class FiltersActivity : AppCompatActivity() {
             title = text
         }
         setupViews()
+        getFilters(DataManager.email)
     }
 
     private fun setupViews() {
@@ -285,13 +284,8 @@ class FiltersActivity : AppCompatActivity() {
         return isValid
     }
 
-    private fun getFilters() {
-        val url = HttpUrl.Builder()
-            .scheme("https")
-            .host("power-path-backend-3e6dc9fdeee0.herokuapp.com")
-            .addPathSegment("get_filters")
-            .addQueryParameter("email", DataManager.email)
-            .build()
+    private fun getFilters(email: String) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_filters?email=$email"
 
         val request = Request.Builder()
             .url(url)
@@ -300,31 +294,59 @@ class FiltersActivity : AppCompatActivity() {
         val client = OkHttpClient()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.d(">>>", "get filters error: $e")
+                Log.d("===", "get filters error: $e")
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
-                    Log.d(">>>", "get filters error: ${response.message}")
+                    Log.d("===", "get filters error: ${response.message}")
                 } else {
                     val responseData = response.body?.string()
-                    val jsonObject = JSONObject(responseData.toString())
-                    val powerRangeMin = jsonObject.optDouble("power_range_min", 0.0)
-                    val powerRangeMax = jsonObject.optDouble("power_range_max", 0.0)
-                    val connectorType = jsonObject.optString("connector_type")
+                    if (responseData != null) {
+                        val jsonResponse = JSONObject(responseData)
 
-                    val networksArray = jsonObject.optJSONArray("networks")
-                    val networks = mutableListOf<String>()
-                    if (networksArray != null) {
-                        for (i in 0 until networksArray.length()) {
-                            networks.add(networksArray.optString(i))
+                        if (jsonResponse.has("error")) {
+                            Log.d("===", "Error: ${jsonResponse.getString("error")}")
+                            return
                         }
-                    }
 
-                    val minimalRating = jsonObject.optDouble("minimal_rating", 0.0)
-                    val stationCount = jsonObject.optInt("station_count", 0)
-                    val paid = jsonObject.optBoolean("paid", false)
-                    val free = jsonObject.optBoolean("free", false)
+                        val userFilter = UserFilter(
+                            id = jsonResponse.getInt("id"),
+                            power_range_min = jsonResponse.getInt("power_range_min"),
+                            power_range_max = jsonResponse.getInt("power_range_max"),
+                            connector_type = jsonResponse.getString("connector_type"),
+                            networks = jsonResponse.getJSONArray("networks")
+                                .let { 0.until(it.length()).map { idx -> it.getString(idx) } },
+                            minimal_rating = jsonResponse.getInt("minimal_rating"),
+                            station_count = jsonResponse.getInt("station_count"),
+                            paid = jsonResponse.getBoolean("paid"),
+                            free = jsonResponse.getBoolean("free")
+                        )
+
+                        runOnUiThread {
+                            binding.tvValueFrom.textSize = 18f
+                            binding.tvValueTo.textSize = 18f
+                        }
+                        binding.tvValueFrom.text = userFilter.power_range_min.toString()
+                        binding.tvValueTo.text = userFilter.power_range_max.toString()
+                        DataManager.connectorType = userFilter.connector_type
+                        DataManager.selectedNetworks = userFilter.networks.toMutableList()
+                        when (userFilter.minimal_rating) {
+                            2 -> binding.rating2.isChecked = true
+                            3 -> binding.rating3.isChecked = true
+                            4 -> binding.rating4.isChecked = true
+                            5 -> binding.rating5.isChecked = true
+                            else -> binding.ratingAny.isChecked = true
+                        }
+                        when (userFilter.station_count) {
+                            2 -> binding.station2.isChecked = true
+                            4 -> binding.station4.isChecked = true
+                            6 -> binding.station6.isChecked = true
+                            else -> binding.stationAny.isChecked = true
+                        }
+                        binding.checkBoxCard.isChecked = userFilter.paid
+                        binding.checkBoxFree.isChecked = userFilter.free
+                    }
                 }
             }
         })
@@ -383,5 +405,6 @@ class FiltersActivity : AppCompatActivity() {
         val free = binding.checkBoxFree.isChecked
         if (!validateFilters(powerRange, connectorType)) return
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
+        onBackPressed()
     }
 }
