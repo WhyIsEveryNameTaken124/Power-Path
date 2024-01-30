@@ -1,5 +1,6 @@
 package com.example.powerpath
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
@@ -118,8 +119,9 @@ class SignInActivity : AppCompatActivity() {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        super.onBackPressed()
-        changeToSignUp()
+        if (mode == 1) {
+            changeToSignUp()
+        }
     }
 
     private fun changeToLogIn() {
@@ -195,13 +197,28 @@ class SignInActivity : AppCompatActivity() {
 
     private fun doSignUp() {
         signup(etEmail.text.toString(), etPassword.text.toString())
+        DataManager.email = etEmail.text.toString()
+        if (cbRememberMe.isChecked) {
+            val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString("email", etEmail.text.toString())
+            editor.apply()
+        }
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 
     private fun doLogIn() {
         login(etEmail.text.toString(), etPassword.text.toString(), {
-            runOnUiThread {
-                Toast.makeText(this@SignInActivity, "login success", Toast.LENGTH_SHORT).show()
+            DataManager.email = etEmail.text.toString()
+            if (cbRememberMe.isChecked) {
+                val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("email", etEmail.text.toString())
+                editor.apply()
             }
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }, {
             runOnUiThread {
                 Toast.makeText(this@SignInActivity, "login error", Toast.LENGTH_SHORT).show()

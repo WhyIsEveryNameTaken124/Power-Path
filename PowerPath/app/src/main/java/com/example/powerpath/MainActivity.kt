@@ -13,6 +13,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.powerpath.api.*
 import com.example.powerpath.fragments.PinInfoFragment
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,7 +36,6 @@ import okhttp3.Response
 import okio.IOException
 import org.json.JSONArray
 import org.json.JSONObject
-import com.example.powerpath.api.*
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnRenameListener {
@@ -66,9 +66,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
-
-        val intent = Intent(this, SignInActivity::class.java)
-        startActivity(intent)
     }
 
     @SuppressLint("PotentialBehaviorOverride")
@@ -301,4 +298,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             }
         })
     }
+
+    override fun onBackPressed() {}
 }

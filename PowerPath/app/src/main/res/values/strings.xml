@@ -51,6 +51,4 @@
     <string name="text_error">Error</string>
     <string name="text_please_select_valid_range">Please select a valid range for charging power.</string>
     <string name="text_please_select_connector_type">Please select a connector type.</string>
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

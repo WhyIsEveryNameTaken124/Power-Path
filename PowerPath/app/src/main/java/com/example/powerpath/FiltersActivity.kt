@@ -1,7 +1,7 @@
 package com.example.powerpath
 
-import com.example.powerpath.fragments.PickNetworksDialogFragment
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.example.powerpath.api.UserFilter
 import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
+import com.example.powerpath.fragments.PickNetworksDialogFragment
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -406,5 +407,11 @@ class FiltersActivity : AppCompatActivity() {
         if (!validateFilters(powerRange, connectorType)) return
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
         onBackPressed()
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("isInvoked", true)
+        startActivity(intent)
     }
 }
