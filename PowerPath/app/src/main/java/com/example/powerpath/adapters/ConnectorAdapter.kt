@@ -17,7 +17,7 @@ class ConnectorAdapter (private val items: List<ConnectorItem>, private val item
 
     class ViewHolder(itemView: View, clickListener: (Int) -> Unit) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val textView: TextView = itemView.findViewById(R.id.textView)
+        val textView: TextView = itemView.findViewById(R.id.tvPinTitle)
         val llConnector: LinearLayout = itemView.findViewById(R.id.llConnector)
 
         init {

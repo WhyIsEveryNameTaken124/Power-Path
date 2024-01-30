@@ -31,7 +31,13 @@
     <string name="text_forgot_password">Forgot password?</string>
     <string name="text_remember_me">Remember me</string>
     <string name="text_have_account">Already have an account? Log in</string>
-    <string name="text_ok">Ok</string>
+    <string name="text_ok">OK</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_save_destination">Save destination</string>
+    <string name="text_save_destination_as">Save destination as:</string>
+    <string name="text_rename_destination">Rename destination</string>
+    <string name="text_new_name">New name:</string>
+    <string name="text_rename">Rename</string>
     <!--    Errors-->
     <string name="text_enter_valid_email">Please enter a valid email address!</string>
     <string name="text_email_already_used">This email is already in use</string>
@@ -45,4 +51,6 @@
     <string name="text_error">Error</string>
     <string name="text_please_select_valid_range">Please select a valid range for charging power.</string>
     <string name="text_please_select_connector_type">Please select a connector type.</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
