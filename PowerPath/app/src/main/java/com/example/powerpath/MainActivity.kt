@@ -66,6 +66,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.mapFragment) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
+
+        val intent = Intent(this, SignInActivity::class.java)
+        startActivity(intent)
     }
 
     @SuppressLint("PotentialBehaviorOverride")

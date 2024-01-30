@@ -198,13 +198,15 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doLogIn() {
-        GlobalScope.launch(Dispatchers.Main) {
-            if (login(etEmail.text.toString(), etPassword.text.toString())) {
+        login(etEmail.text.toString(), etPassword.text.toString(), {
+            runOnUiThread {
                 Toast.makeText(this@SignInActivity, "login success", Toast.LENGTH_SHORT).show()
-            } else {
+            }
+        }, {
+            runOnUiThread {
                 Toast.makeText(this@SignInActivity, "login error", Toast.LENGTH_SHORT).show()
             }
-        }
+        })
     }
 
     private fun signup(email :String, password: String) {
@@ -240,7 +242,7 @@ class SignInActivity : AppCompatActivity() {
         })
     }
 
-    private suspend fun login(email :String, password: String): Boolean {
+    private fun login(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/login"
         val jsonBody = JSONObject().apply {
             put("email", email)
@@ -255,16 +257,20 @@ class SignInActivity : AppCompatActivity() {
             .build()
 
         val client = OkHttpClient()
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = client.newCall(request).execute()
-                response.isSuccessful
-            } catch (e: IOException) {
-                Log.d("===", "signup error: $e")
-                false
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                //TODO error
             }
-        }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError()
+                }
+            }
+        })
     }
 }
 
