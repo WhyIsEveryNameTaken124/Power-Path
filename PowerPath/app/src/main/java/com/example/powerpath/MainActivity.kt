@@ -28,12 +28,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.maps.android.PolyUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -44,7 +39,6 @@ import okhttp3.Response
 import okio.IOException
 import org.json.JSONArray
 import org.json.JSONObject
-import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnRenameListener {
@@ -148,7 +142,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     private fun setPin(location: LatLng, title: String) {
         val marker = mMap.addMarker(MarkerOptions().position(location).title(title))
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 18f))
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 18f))
         if (marker != null) {
             markersMap[location] = marker
         }
@@ -193,6 +187,30 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             e.printStackTrace()
         }
         return null //add error handling so app doesn't crash pls
+    }
+
+    private suspend fun displayDirections(coordinates: Array<String>) {
+        Log.d("TaskStatus", coordinates[0])
+        for (i in 0 until coordinates.size - 1) {
+            val start = coordinates[i]
+            val destination = coordinates[i + 1]
+
+
+            val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString(start, destination))
+            mMap.addPolyline(
+                PolylineOptions().addAll(decodedPath).width(10f).color(Color.BLUE)
+            )
+            val builder = LatLngBounds.Builder()
+            for (latLng in decodedPath) {
+                builder.include(latLng)
+            }
+        }
+        val builder = LatLngBounds.Builder()
+        builder.include(coordinates[0].split(",").let { LatLng(it[0].toDouble(), it[1].toDouble()) })
+        builder.include(coordinates[coordinates.size - 1].split(",").let { LatLng(it[0].toDouble(), it[1].toDouble()) })
+        val bounds = builder.build()
+        val padding = 100
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
 
     override fun showSavePinDialog(location: LatLng, isRenaming: Boolean) {
@@ -318,7 +336,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             .url(url)
             .build()
 
-        lifecycleScope.launch(Dispatchers.IO) { // Launch coroutine in IO Dispatcher
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = client.newCall(request).execute()
                 if (response.isSuccessful) {
@@ -351,8 +369,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                 val responseBody = response.body?.string()
                 responseBody?.let {
                     val json = JSONObject(it)
-                    val state = json.getString("state")
-                    when (state) {
+                    when (json.getString("state")) {
                         "PENDING" -> {
                             delay(10000)
                             checkTaskStatus(taskId)
@@ -361,9 +378,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                         "SUCCESS" -> {
                             val result = json.optString("result")
                             Log.d("TaskStatus", "Task completed successfully. Result: $result")
-//                            withContext(Dispatchers.Main) {
-//                                // Update UI or notify user of success
-//                            }
+                            val jsonArray = JSONArray(result)
+                            val pinsArray = Array(jsonArray.length()) { i -> jsonArray.getString(i) }
+                            withContext(Dispatchers.Main) {
+                                for (i in 0 until jsonArray.length()) {
+                                    val coordinateString = jsonArray.getString(i)
+
+                                    val latLng = coordinateString.split(",")
+                                        .let { LatLng(it[0].toDouble(), it[1].toDouble()) }
+
+                                    setPin(latLng, "stop")
+                                }
+
+                                displayDirections(pinsArray)
+                            }
                         }
 
                         else -> {}
