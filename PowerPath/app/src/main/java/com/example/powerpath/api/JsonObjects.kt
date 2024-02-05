@@ -17,5 +17,6 @@ data class UserFilter(
     val minimal_rating: Int,
     val station_count: Int,
     val paid: Boolean,
-    val free: Boolean
+    val free: Boolean,
+    val durability: Int
 )

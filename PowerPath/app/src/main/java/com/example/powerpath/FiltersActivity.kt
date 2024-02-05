@@ -321,7 +321,8 @@ class FiltersActivity : AppCompatActivity() {
                             minimal_rating = jsonResponse.getInt("minimal_rating"),
                             station_count = jsonResponse.getInt("station_count"),
                             paid = jsonResponse.getBoolean("paid"),
-                            free = jsonResponse.getBoolean("free")
+                            free = jsonResponse.getBoolean("free"),
+                            durability = jsonResponse.getInt("durability")
                         )
 
                         runOnUiThread {
@@ -347,6 +348,7 @@ class FiltersActivity : AppCompatActivity() {
                         }
                         binding.checkBoxCard.isChecked = userFilter.paid
                         binding.checkBoxFree.isChecked = userFilter.free
+                        binding.etDurability.setText(userFilter.durability.toString())
                     }
                 }
             }
