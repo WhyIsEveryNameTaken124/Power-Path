@@ -6,6 +6,7 @@
     <string name="text_email_address">Email address:</string>
     <string name="text_password">Password:</string>
     <string name="text_charging_power">Charging Power</string>
+    <string name="text_durability">Durability</string>
     <string name="text_connector_types">Connector Types</string>
     <string name="text_networks">Networks</string>
     <string name="text_ratings">Ratings</string>

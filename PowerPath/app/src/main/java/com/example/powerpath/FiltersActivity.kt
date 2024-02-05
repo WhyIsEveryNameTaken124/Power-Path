@@ -353,7 +353,7 @@ class FiltersActivity : AppCompatActivity() {
         })
     }
 
-    private fun saveFilters(email :String, powerRange: Pair<Int, Int>, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean) {
+    private fun saveFilters(email :String, powerRange: Pair<Int, Int>, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean, durability: Int) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_filters"
         val jsonBody = JSONObject().apply {
             put("email", email)
@@ -367,6 +367,7 @@ class FiltersActivity : AppCompatActivity() {
             put("station_count", minStationCount)
             put("paid", paid)
             put("free", free)
+            put("durability", durability*1000)
         }
 
         val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
@@ -404,8 +405,9 @@ class FiltersActivity : AppCompatActivity() {
         val minStationCount = selectedStationCount
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
+        val durability = binding.etDurability.text.toString().toInt()
         if (!validateFilters(powerRange, connectorType)) return
-        saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free)
+        saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free, durability)
         onBackPressed()
     }
 

@@ -22,7 +22,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical">
-                <!--no clue, figure out later-->
                 <TextView
                     android:id="@+id/tvChargingPower"
                     android:layout_width="match_parent"
@@ -95,6 +94,44 @@
 
             <LinearLayout
                 android:id="@+id/llSeparator1"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+
+            <LinearLayout
+                android:id="@+id/llDurability"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvChargingPower2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:text="@string/text_durability"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etDurability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_border"
+                    android:ems="10"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSeparator1a"
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:layout_marginLeft="16dp"
