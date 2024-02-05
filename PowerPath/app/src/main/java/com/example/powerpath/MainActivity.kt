@@ -172,7 +172,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private suspend fun displayDirections(coordinates: Array<String>) {
-        Log.d("TaskStatus", coordinates[0])
         for (i in 0 until coordinates.size - 1) {
             val start = coordinates[i]
             val destination = coordinates[i + 1]
@@ -372,21 +371,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
                         "SUCCESS" -> {
                             val result = json.optString("result")
-                            Log.d("TaskStatus", "Task completed successfully. Result: $result")
+                            Log.d("TaskStatus", result)
                             val jsonArray = JSONArray(result)
-                            val pinsArray = Array(jsonArray.length()) { i -> jsonArray.getString(i) }
-                            withContext(Dispatchers.Main) {
-                                for (i in 0 until jsonArray.length()) {
-                                    val coordinateString = jsonArray.getString(i)
+                            if (jsonArray.length() == 0 || jsonArray.get(jsonArray.length()-1) == jsonArray.get(jsonArray.length()-2)) {
+                                withContext(Dispatchers.Main) {
+                                    val builder: AlertDialog.Builder =
+                                        AlertDialog.Builder(this@MainActivity)
+                                    builder.setTitle(resources.getText(R.string.text_impossible_path))
+                                    builder.setMessage(resources.getText(R.string.text_could_not_find_a_path))
+                                    builder.setPositiveButton(resources.getString(R.string.text_ok)) { _, _ ->
 
-                                    val latLng = coordinateString.split(",")
-                                        .let { LatLng(it[0].toDouble(), it[1].toDouble()) }
-
-                                    setPin(latLng, "stop")
+                                    }
+                                    builder.show()
+                                    snackbar.dismiss()
                                 }
+                            } else {
+                                val pinsArray =
+                                    Array(jsonArray.length()) { i -> jsonArray.getString(i) }
+                                withContext(Dispatchers.Main) {
+                                    for (i in 0 until jsonArray.length()) {
+                                        val coordinateString = jsonArray.getString(i)
 
-                                displayDirections(pinsArray)
-                                snackbar.dismiss()
+                                        val latLng = coordinateString.split(",")
+                                            .let { LatLng(it[0].toDouble(), it[1].toDouble()) }
+
+                                        setPin(latLng, "stop")
+                                    }
+
+                                    displayDirections(pinsArray)
+                                    snackbar.dismiss()
+                                }
                             }
                         }
 

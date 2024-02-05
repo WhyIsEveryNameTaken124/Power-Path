@@ -41,6 +41,8 @@
     <string name="text_directions">Directions</string>
     <string name="text_calculating_route">Calculating route…</string>
     <string name="text_something_went_wrong">Something went wrong. Please try again.</string>
+    <string name="text_impossible_path">Impossible path</string>
+    <string name="text_could_not_find_a_path">Could not find a route with the current filters set.</string>
     <!--    Errors-->
     <string name="text_enter_valid_email">Please enter a valid email address!</string>
     <string name="text_email_already_used">This email is already in use</string>
