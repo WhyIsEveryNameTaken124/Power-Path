@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.*
 import okhttp3.Call
@@ -356,6 +357,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun checkTaskStatus(taskId: String) {
+        val snackbar = Snackbar.make(
+            findViewById(android.R.id.content),
+            resources.getText(R.string.text_calculating_route),
+            Snackbar.LENGTH_INDEFINITE
+        )
+        snackbar.view.setBackgroundColor(ContextCompat.getColor(this, R.color.keese_blue))
+        snackbar.show()
         lifecycleScope.launch(Dispatchers.IO) {
             val client = OkHttpClient()
             val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/task-status/$taskId"
@@ -391,14 +399,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                                 }
 
                                 displayDirections(pinsArray)
+                                snackbar.dismiss()
                             }
                         }
 
-                        else -> {}
+                        else -> {
+                            withContext(Dispatchers.Main) {
+                                snackbar.dismiss()
+                            }
+                        }
                     }
                 }
             } else {
-                // Handle failure
+                withContext(Dispatchers.Main) {
+                    snackbar.setText(resources.getText(R.string.text_something_went_wrong))
+                    snackbar.duration = Snackbar.LENGTH_SHORT
+                    snackbar.view.setBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.keese_blue))
+                    snackbar.show()
+                    delay(5000)
+                    snackbar.dismiss()
+                }
             }
         }
     }
