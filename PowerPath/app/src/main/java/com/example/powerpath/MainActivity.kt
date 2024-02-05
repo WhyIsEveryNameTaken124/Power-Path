@@ -13,6 +13,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.powerpath.api.*
 import com.example.powerpath.fragments.PinInfoFragment
 import com.google.android.gms.location.LocationServices
@@ -21,10 +22,17 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.maps.android.PolyUtil
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
@@ -36,6 +44,7 @@ import okhttp3.Response
 import okio.IOException
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlinx.coroutines.*
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnRenameListener {
@@ -103,8 +112,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
             getPins(DataManager.email)
 
+            startFindRouteTask(DataManager.email, "42.713744,23.300174", "41.062135,21.247333", 200000)
+
 //            GlobalScope.launch {
-//                val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString("42.65030150660556,23.381500463654387", "42.65257491466009,23.382200638366317"))
+//                val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString("42.680529,23.310433", "43.247122,26.572141"))
 //
 //                withContext(Dispatchers.Main) {
 //                    googleMap.addPolyline(
@@ -298,6 +309,73 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             }
         })
     }
+
+    private fun startFindRouteTask(email: String, start: String, destination: String, durability: Int) {
+        val client = OkHttpClient()
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/find_route?email=$email&start=$start&destination=$destination&durability=$durability"
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        lifecycleScope.launch(Dispatchers.IO) { // Launch coroutine in IO Dispatcher
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    responseBody?.let {
+                        val taskId = JSONObject(it).getString("task_id")
+                        Log.d("TaskId", taskId)
+                        checkTaskStatus(taskId)
+                    }
+                } else {
+                    Log.d("HTTPError", "start find route error: HTTP error code: ${response.code}")
+                }
+            } catch (e: Exception) {
+                Log.e("NetworkError", "Error sending request", e)
+            }
+        }
+    }
+
+    private fun checkTaskStatus(taskId: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val client = OkHttpClient()
+            val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/task-status/$taskId"
+
+            val request = Request.Builder()
+                .url(url)
+                .build()
+
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val responseBody = response.body?.string()
+                responseBody?.let {
+                    val json = JSONObject(it)
+                    val state = json.getString("state")
+                    when (state) {
+                        "PENDING" -> {
+                            delay(10000)
+                            checkTaskStatus(taskId)
+                        }
+
+                        "SUCCESS" -> {
+                            val result = json.optString("result")
+                            Log.d("TaskStatus", "Task completed successfully. Result: $result")
+//                            withContext(Dispatchers.Main) {
+//                                // Update UI or notify user of success
+//                            }
+                        }
+
+                        else -> {}
+                    }
+                }
+            } else {
+                // Handle failure
+            }
+        }
+    }
+
+
 
     override fun onBackPressed() {}
 }
