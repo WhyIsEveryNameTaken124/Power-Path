@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.powerpath.api.*
 import com.example.powerpath.fragments.PinInfoFragment
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -42,11 +43,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnRenameListener {
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnButtonPressedListener {
 
     private lateinit var filtersButton: FloatingActionButton
     private lateinit var mMap: GoogleMap
     private val markersMap = HashMap<LatLng, Marker>()
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -61,6 +64,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
         supportActionBar?.hide()
 
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         filtersButton = findViewById(R.id.buttonFilters)
         filtersButton.setOnClickListener {
             val intent = Intent(this, FiltersActivity::class.java)
@@ -106,29 +110,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             }
 
             getPins(DataManager.email)
-
-            startFindRouteTask(DataManager.email, "42.713744,23.300174", "41.062135,21.247333", 200000)
-
-//            GlobalScope.launch {
-//                val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString("42.680529,23.310433", "43.247122,26.572141"))
-//
-//                withContext(Dispatchers.Main) {
-//                    googleMap.addPolyline(
-//                        PolylineOptions().addAll(decodedPath).width(10f).color(Color.BLUE)
-//                    )
-//
-//                    val builder = LatLngBounds.Builder()
-//                    for (latLng in decodedPath) {
-//                        builder.include(latLng)
-//                    }
-//
-//                    val bounds = builder.build()
-//                    val padding = 100
-//
-//                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
-//                }
-//            }
-
         } else {
             ActivityCompat.requestPermissions(
                 this,
@@ -231,6 +212,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         builder.setNegativeButton(resources.getString(R.string.text_cancel)
         ) { dialog, _ -> dialog.cancel() }
         builder.create().show()
+    }
+
+    override fun calcDirections(location: String) {
+        getLastLocation { latLng ->
+            startFindRouteTask(DataManager.email, "${latLng.latitude},${latLng.longitude}", location, 200000)
+        }
     }
 
     private suspend fun getPath(start: String, destination: String): String? {
@@ -423,6 +410,33 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         }
     }
 
+    fun getLastLocation(callback: (LatLng) -> Unit) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationProviderClient.lastLocation
+            .addOnSuccessListener { location ->
+                if (location != null) {
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    callback(LatLng(latitude, longitude))
+                }
+            }
+    }
 
 
     override fun onBackPressed() {}

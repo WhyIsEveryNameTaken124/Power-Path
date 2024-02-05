@@ -32,7 +32,7 @@
 
         <!-- New Button at the start -->
         <Button
-            android:id="@+id/button_new"
+            android:id="@+id/button_directions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button"

@@ -30,9 +30,15 @@ class PinInfoFragment : BottomSheetDialogFragment() {
         view.findViewById<TextView>(R.id.tvCoordinates).text = "$latitude\n$longitude"
 
         view.findViewById<Button>(R.id.button).setOnClickListener {
-            (activity as? OnRenameListener)?.showSavePinDialog(latLng, true)
+            (activity as? OnButtonPressedListener)?.showSavePinDialog(latLng, true)
             dismiss()
         }
+
+        view.findViewById<Button>(R.id.button_directions).setOnClickListener {
+            (activity as? OnButtonPressedListener)?.calcDirections("$latitude,$longitude")
+            dismiss()
+        }
+
     }
 
     companion object {
@@ -51,7 +57,9 @@ class PinInfoFragment : BottomSheetDialogFragment() {
         }
     }
 
-    interface OnRenameListener {
+    interface OnButtonPressedListener {
         fun showSavePinDialog(location: LatLng, isRenaming: Boolean)
+
+        fun calcDirections(location: String)
     }
 }
