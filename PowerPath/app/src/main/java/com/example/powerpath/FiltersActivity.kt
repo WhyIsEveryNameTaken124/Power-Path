@@ -328,6 +328,7 @@ class FiltersActivity : AppCompatActivity() {
                         runOnUiThread {
                             binding.tvValueFrom.textSize = 18f
                             binding.tvValueTo.textSize = 18f
+                            binding.etDurability.setText(userFilter.durability.toString())
                         }
                         binding.tvValueFrom.text = userFilter.power_range_min.toString()
                         binding.tvValueTo.text = userFilter.power_range_max.toString()
@@ -348,7 +349,6 @@ class FiltersActivity : AppCompatActivity() {
                         }
                         binding.checkBoxCard.isChecked = userFilter.paid
                         binding.checkBoxFree.isChecked = userFilter.free
-                        binding.etDurability.setText(userFilter.durability.toString())
                     }
                 }
             }
