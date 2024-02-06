@@ -40,6 +40,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okio.IOException
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 
@@ -131,7 +132,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     private fun setPin(location: LatLng, title: String) {
         val marker = mMap.addMarker(MarkerOptions().position(location).title(title))
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 18f))
         if (marker != null) {
             markersMap[location] = marker
         }
@@ -470,16 +470,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         val client = OkHttpClient()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.d("rrr", "save pin error: ${e.message}")
+                Log.d("rrr", "closest station error: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseData = response.body?.string()
-                    Log.d("rrr", "save pin success: ${responseData}")
-                } else {
-                    Log.d("rrr", "save pin error: ${response.message}")
+                val responseData = response.body?.string()
+                Log.d("rrr", "closest station success: $responseData")
 
+                try {
+                    val jsonObject = JSONObject(responseData)
+                    val latitude = jsonObject.getDouble("latitude")
+                    val longitude = jsonObject.getDouble("longitude")
+                    GlobalScope.launch {
+                        withContext(Dispatchers.Main) {
+                            setPin(LatLng(latitude, longitude), "closest")
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 18f))
+                        }
+                    }
+                } catch (e: JSONException) {
+                    Log.e("rrr", "Failed to parse JSON response", e)
                 }
             }
         })
