@@ -357,6 +357,18 @@ class FiltersActivity : AppCompatActivity() {
 
     private fun saveFilters(email :String, powerRange: Pair<Int, Int>, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean, durability: Int) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_filters"
+
+        val type = when(connectorType) {
+            "CCS Combo Type 1" -> "CCS (Type 1)"
+            "CCS Combo Type 2" -> "CCS (Type 2)"
+            "CHAdeMO" -> "CHAdeMO"
+            "GB/T" -> "GB-T DC - GB/T 20234"
+            "Supercharger" -> "NACS / Tesla Supercharger"
+            "Type 1 J1772" -> "Type 1 (J1772)"
+            "Type 2 Mennekes" -> "Type 2"
+            else -> ""
+        }
+
         val jsonBody = JSONObject().apply {
             put("email", email)
             put("power_range", JSONArray().apply {

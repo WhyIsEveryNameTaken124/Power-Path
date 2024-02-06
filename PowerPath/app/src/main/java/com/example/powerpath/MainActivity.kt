@@ -46,6 +46,7 @@ import org.json.JSONObject
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnButtonPressedListener {
 
     private lateinit var filtersButton: FloatingActionButton
+    private lateinit var searchButton: FloatingActionButton
     private lateinit var mMap: GoogleMap
     private val markersMap = HashMap<LatLng, Marker>()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -64,11 +65,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
         supportActionBar?.hide()
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         filtersButton = findViewById(R.id.buttonFilters)
         filtersButton.setOnClickListener {
             val intent = Intent(this, FiltersActivity::class.java)
             startActivity(intent)
+        }
+        searchButton = findViewById(R.id.buttonSearch)
+        searchButton.setOnClickListener {
+            getLastLocation {
+                getClosestStation(it)
+            }
         }
 
         val mapFragment = supportFragmentManager
@@ -424,7 +431,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         }
     }
 
-    fun getLastLocation(callback: (LatLng) -> Unit) {
+    private fun getLastLocation(callback: (LatLng) -> Unit) {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -452,6 +459,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
             }
     }
 
+    private fun getClosestStation(location: LatLng) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=100&email=${DataManager.email}"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("rrr", "save pin error: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseData = response.body?.string()
+                    Log.d("rrr", "save pin success: ${responseData}")
+                } else {
+                    Log.d("rrr", "save pin error: ${response.message}")
+
+                }
+            }
+        })
+    }
 
     override fun onBackPressed() {}
 }
