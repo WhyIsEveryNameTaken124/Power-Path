@@ -55,6 +55,5 @@
     <string name="text_no_email">Please enter an email</string>
     <string name="text_no_password">Please enter a password</string>
     <string name="text_error">Error</string>
-    <string name="text_please_select_valid_range">Please select a valid range for charging power.</string>
-    <string name="text_please_select_connector_type">Please select a connector type.</string>
+    <string name="text_please_choose_durability">Please choose durability.</string>
 </resources>

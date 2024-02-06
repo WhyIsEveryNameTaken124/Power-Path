@@ -258,23 +258,12 @@ class FiltersActivity : AppCompatActivity() {
         imageView.startAnimation(rotateAnimation)
     }
 
-    private fun validateFilters(powerRange: Pair<Int, Int>, connectorType: String): Boolean {
+    private fun validateFilters(): Boolean {
         var isValid = true
-        if (powerRange.first > powerRange.second) {
+        if (binding.etDurability.text.isNullOrEmpty()) {
             AlertDialog.Builder(this@FiltersActivity)
                 .setTitle(resources.getString(R.string.text_error))
-                .setMessage(resources.getString(R.string.text_please_select_valid_range))
-                .setNeutralButton(resources.getString(R.string.text_ok)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
-            isValid = false
-        }
-        if (connectorType == "") {
-            AlertDialog.Builder(this@FiltersActivity)
-                .setTitle(resources.getString(R.string.text_error))
-                .setMessage(resources.getString(R.string.text_please_select_connector_type))
+                .setMessage(resources.getString(R.string.text_please_choose_durability))
                 .setNeutralButton(resources.getString(R.string.text_ok)) { dialog, _ ->
                     dialog.dismiss()
                 }
@@ -420,7 +409,7 @@ class FiltersActivity : AppCompatActivity() {
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
         val durability = binding.etDurability.text.toString().toInt()
-        if (!validateFilters(powerRange, connectorType)) return
+        if (!validateFilters()) return
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free, durability)
         onBackPressed()
     }
