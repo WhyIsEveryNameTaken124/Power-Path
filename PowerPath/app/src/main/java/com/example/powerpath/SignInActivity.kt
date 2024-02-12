@@ -135,7 +135,7 @@ class SignInActivity : AppCompatActivity() {
         etPassword.clearFocus()
         tvPasswordError.visibility = View.GONE
         cbRememberMe.isChecked = false
-        tvForgotPassword.visibility = View.VISIBLE
+        tvForgotPassword.visibility = View.GONE
         tvLogIn.visibility = View.GONE
     }
 

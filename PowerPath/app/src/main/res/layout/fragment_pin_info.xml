@@ -10,6 +10,7 @@
         android:id="@+id/tvPinTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:text="Title"
         android:textColor="@color/black"
         android:textSize="26sp"
@@ -19,6 +20,7 @@
         android:id="@+id/tvCoordinates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:text="desc"
         android:textColor="@color/black"
         android:textSize="20sp" />

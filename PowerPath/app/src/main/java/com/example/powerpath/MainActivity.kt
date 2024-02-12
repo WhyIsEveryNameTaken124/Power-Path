@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     private lateinit var searchButton: FloatingActionButton
     private lateinit var mMap: GoogleMap
     private val markersMap = HashMap<LatLng, Marker>()
+    private val directionLocations = mutableListOf<LatLng>()
+    val polylines = mutableListOf<Polyline>()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -179,15 +182,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private suspend fun displayDirections(coordinates: Array<String>) {
+        clearPolylines()
         for (i in 0 until coordinates.size - 1) {
             val start = coordinates[i]
             val destination = coordinates[i + 1]
 
 
             val decodedPath: List<LatLng> = PolyUtil.decode(extractOverviewPolylineString(start, destination))
-            mMap.addPolyline(
+            val polyline = mMap.addPolyline(
                 PolylineOptions().addAll(decodedPath).width(10f).color(Color.BLUE)
             )
+            polylines.add(polyline)
             val builder = LatLngBounds.Builder()
             for (latLng in decodedPath) {
                 builder.include(latLng)
@@ -200,6 +205,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         val padding = 100
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
+
+    private fun clearPolylines() {
+        for (polyline in polylines) {
+            polyline.remove()
+        }
+        polylines.clear()
+    }
+    private fun removeAllPins(locations: List<LatLng>) {
+        locations.forEach { location ->
+            removePin(location)
+        }
+    }
+
 
     override fun showSavePinDialog(location: LatLng, isRenaming: Boolean) {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
@@ -380,7 +398,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                             val result = json.optString("result")
                             Log.d("TaskStatus", result)
                             val jsonArray = JSONArray(result)
-                            if (jsonArray.length() == 0 || jsonArray.get(jsonArray.length()-1) == jsonArray.get(jsonArray.length()-2)) {
+                            if (jsonArray.length() == 0 || jsonArray.length() == 1 || jsonArray.get(jsonArray.length()-1) == jsonArray.get(jsonArray.length()-2)) {
                                 withContext(Dispatchers.Main) {
                                     val builder: AlertDialog.Builder =
                                         AlertDialog.Builder(this@MainActivity)
@@ -396,6 +414,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                                 val pinsArray =
                                     Array(jsonArray.length()) { i -> jsonArray.getString(i) }
                                 withContext(Dispatchers.Main) {
+                                    removeAllPins(directionLocations)
+                                    directionLocations.clear()
                                     for (i in 0 until jsonArray.length()) {
                                         val coordinateString = jsonArray.getString(i)
 
@@ -403,6 +423,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                                             .let { LatLng(it[0].toDouble(), it[1].toDouble()) }
 
                                         setPin(latLng, "stop")
+                                        directionLocations.add(latLng)
                                     }
 
                                     displayDirections(pinsArray)
@@ -460,7 +481,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun getClosestStation(location: LatLng) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=100&email=${DataManager.email}"
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=10&email=${DataManager.email}"
+        Log.d("nbfjbfn", location.latitude.toString())
 
         val request = Request.Builder()
             .url(url)
