@@ -511,6 +511,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                     }
                 } catch (e: JSONException) {
                     Log.e("rrr", "Failed to parse JSON response", e)
+                    runOnUiThread {
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle(resources.getString(R.string.text_error))
+                            .setMessage(resources.getString(R.string.text_could_not_find_nearby_stations))
+                            .setNeutralButton(resources.getString(R.string.text_ok)) { _, _ -> }
+                            .show()
+                    }
+
                 }
             }
         })
