@@ -57,4 +57,5 @@
     <string name="text_no_password">Please enter a password</string>
     <string name="text_error">Error</string>
     <string name="text_please_choose_durability">Please choose durability.</string>
+    <string name="text_please_choose_payment_option">Please choose at least one payment option.</string>
 </resources>

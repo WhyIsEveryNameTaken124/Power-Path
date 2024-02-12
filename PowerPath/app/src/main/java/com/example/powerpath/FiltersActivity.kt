@@ -260,10 +260,18 @@ class FiltersActivity : AppCompatActivity() {
 
     private fun validateFilters(): Boolean {
         var isValid = true
+        var errorMessage = ""
         if (binding.etDurability.text.isNullOrEmpty()) {
+            errorMessage = resources.getString(R.string.text_please_choose_durability)
+        }
+        if (!binding.checkBoxCard.isChecked && !binding.checkBoxFree.isChecked) {
+            errorMessage = resources.getString(R.string.text_please_choose_payment_option)
+        }
+        
+        if (errorMessage.isNotEmpty()) {
             AlertDialog.Builder(this@FiltersActivity)
                 .setTitle(resources.getString(R.string.text_error))
-                .setMessage(resources.getString(R.string.text_please_choose_durability))
+                .setMessage(errorMessage)
                 .setNeutralButton(resources.getString(R.string.text_ok)) { dialog, _ ->
                     dialog.dismiss()
                 }
@@ -399,6 +407,7 @@ class FiltersActivity : AppCompatActivity() {
     }
 
     private fun onSave() {
+        if (!validateFilters()) return
         val email = DataManager.email
         val powerRange = Pair(
             if (binding.tvValueFrom.text.toString() == "--") 0 else selectedMinPower,
@@ -411,7 +420,6 @@ class FiltersActivity : AppCompatActivity() {
         val paid = binding.checkBoxCard.isChecked
         val free = binding.checkBoxFree.isChecked
         val durability = binding.etDurability.text.toString().toInt()
-        if (!validateFilters()) return
         saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free, durability)
         onBackPressed()
     }
