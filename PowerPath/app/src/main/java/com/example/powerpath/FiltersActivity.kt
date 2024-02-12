@@ -320,7 +320,9 @@ class FiltersActivity : AppCompatActivity() {
                             binding.etDurability.setText((userFilter.durability/1000).toString())
                         }
                         binding.tvValueFrom.text = userFilter.power_range_min.toString()
+                        selectedMinPower = userFilter.power_range_min
                         binding.tvValueTo.text = userFilter.power_range_max.toString()
+                        selectedMaxPower = userFilter.power_range_max
                         DataManager.connectorType = userFilter.connector_type
                         DataManager.selectedNetworks = userFilter.networks.toMutableList()
                         when (userFilter.minimal_rating) {
@@ -364,7 +366,7 @@ class FiltersActivity : AppCompatActivity() {
                 put(powerRange.first)
                 put(powerRange.second)
             })
-            put("connector_type", connectorType)
+            put("connector_type", type)
             put("networks", JSONArray(networks))
             put("minimal_rating", minRating)
             put("station_count", minStationCount)

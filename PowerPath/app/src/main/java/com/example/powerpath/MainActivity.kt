@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     private lateinit var mMap: GoogleMap
     private val markersMap = HashMap<LatLng, Marker>()
     private val directionLocations = mutableListOf<LatLng>()
-    val polylines = mutableListOf<Polyline>()
+    private val polylines = mutableListOf<Polyline>()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -482,7 +482,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     private fun getClosestStation(location: LatLng) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=10&email=${DataManager.email}"
-        Log.d("nbfjbfn", location.latitude.toString())
 
         val request = Request.Builder()
             .url(url)
