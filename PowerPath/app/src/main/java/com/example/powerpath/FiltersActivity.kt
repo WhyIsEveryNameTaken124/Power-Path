@@ -18,6 +18,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import com.example.powerpath.api.Network
 import com.example.powerpath.api.UserFilter
 import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
@@ -283,74 +284,36 @@ class FiltersActivity : AppCompatActivity() {
     }
 
     private fun getFilters(email: String) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_filters?email=$email"
-
-        val request = Request.Builder()
-            .url(url)
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d("===", "get filters error: $e")
+        val network = Network()
+        network.getFilters(email, {userFilter ->
+            runOnUiThread {
+                binding.tvValueFrom.textSize = 18f
+                binding.tvValueTo.textSize = 18f
+                binding.etDurability.setText((userFilter.durability/1000).toString())
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Log.d("===", "get filters error: ${response.message}")
-                } else {
-                    val responseData = response.body?.string()
-                    if (responseData != null) {
-                        val jsonResponse = JSONObject(responseData)
-
-                        if (jsonResponse.has("error")) {
-                            Log.d("===", "Error: ${jsonResponse.getString("error")}")
-                            return
-                        }
-
-                        val userFilter = UserFilter(
-                            id = jsonResponse.getInt("id"),
-                            power_range_min = jsonResponse.getInt("power_range_min"),
-                            power_range_max = jsonResponse.getInt("power_range_max"),
-                            connector_type = jsonResponse.getString("connector_type"),
-                            networks = jsonResponse.getJSONArray("networks")
-                                .let { 0.until(it.length()).map { idx -> it.getString(idx) } },
-                            minimal_rating = jsonResponse.getInt("minimal_rating"),
-                            station_count = jsonResponse.getInt("station_count"),
-                            paid = jsonResponse.getBoolean("paid"),
-                            free = jsonResponse.getBoolean("free"),
-                            durability = jsonResponse.getInt("durability")
-                        )
-
-                        runOnUiThread {
-                            binding.tvValueFrom.textSize = 18f
-                            binding.tvValueTo.textSize = 18f
-                            binding.etDurability.setText((userFilter.durability/1000).toString())
-                        }
-                        binding.tvValueFrom.text = userFilter.power_range_min.toString()
-                        selectedMinPower = userFilter.power_range_min
-                        binding.tvValueTo.text = userFilter.power_range_max.toString()
-                        selectedMaxPower = userFilter.power_range_max
-                        DataManager.connectorType = userFilter.connector_type
-                        DataManager.selectedNetworks = userFilter.networks.toMutableList()
-                        when (userFilter.minimal_rating) {
-                            2 -> binding.rating2.isChecked = true
-                            3 -> binding.rating3.isChecked = true
-                            4 -> binding.rating4.isChecked = true
-                            5 -> binding.rating5.isChecked = true
-                            else -> binding.ratingAny.isChecked = true
-                        }
-                        when (userFilter.station_count) {
-                            2 -> binding.station2.isChecked = true
-                            4 -> binding.station4.isChecked = true
-                            6 -> binding.station6.isChecked = true
-                            else -> binding.stationAny.isChecked = true
-                        }
-                        binding.checkBoxCard.isChecked = userFilter.paid
-                        binding.checkBoxFree.isChecked = userFilter.free
-                    }
-                }
+            binding.tvValueFrom.text = userFilter.power_range_min.toString()
+            selectedMinPower = userFilter.power_range_min
+            binding.tvValueTo.text = userFilter.power_range_max.toString()
+            selectedMaxPower = userFilter.power_range_max
+            DataManager.connectorType = userFilter.connector_type
+            DataManager.selectedNetworks = userFilter.networks.toMutableList()
+            when (userFilter.minimal_rating) {
+                2 -> binding.rating2.isChecked = true
+                3 -> binding.rating3.isChecked = true
+                4 -> binding.rating4.isChecked = true
+                5 -> binding.rating5.isChecked = true
+                else -> binding.ratingAny.isChecked = true
             }
+            when (userFilter.station_count) {
+                2 -> binding.station2.isChecked = true
+                4 -> binding.station4.isChecked = true
+                6 -> binding.station6.isChecked = true
+                else -> binding.stationAny.isChecked = true
+            }
+            binding.checkBoxCard.isChecked = userFilter.paid
+            binding.checkBoxFree.isChecked = userFilter.free
+        }, {
+            //nothing for now
         })
     }
 
