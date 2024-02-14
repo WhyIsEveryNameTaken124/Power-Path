@@ -270,35 +270,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         }
     }
     private fun savePin(email: String, name: String, latitude: Double, longitude: Double) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/save_pin"
-        val jsonBody = JSONObject().apply {
-            put("email", email)
-            put("name", name)
-            put("latitude", String.format("%.6f", latitude).toDouble())
-            put("longitude", String.format("%.6f", longitude).toDouble())
-        }
-
-        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d("===", "save pin error: $e")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Log.d("===", "save pin error: ${response.message}")
-                } else {
-                    Log.d("===", "save pin successful: ${response.message}")
-                }
-            }
-        })
+        val network = Network()
+        network.savePin(email, name, latitude, longitude)
     }
 
     private fun getPins(email: String) {
