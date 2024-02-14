@@ -437,46 +437,36 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun getClosestStation(location: LatLng) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=10&email=${DataManager.email}"
-
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d("rrr", "closest station error: ${e.message}")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseData = response.body?.string()
-                Log.d("rrr", "closest station success: $responseData")
-
-                try {
-                    val jsonObject = JSONObject(responseData)
-                    val latitude = jsonObject.getDouble("latitude")
-                    val longitude = jsonObject.getDouble("longitude")
-                    GlobalScope.launch {
-                        withContext(Dispatchers.Main) {
-                            setPin(LatLng(latitude, longitude), "closest")
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 18f))
-                        }
+        val network = Network()
+        network.getClosestStation(location) { responseData ->
+            try {
+                val jsonObject = JSONObject(responseData)
+                val latitude = jsonObject.getDouble("latitude")
+                val longitude = jsonObject.getDouble("longitude")
+                GlobalScope.launch {
+                    withContext(Dispatchers.Main) {
+                        setPin(LatLng(latitude, longitude), "closest")
+                        mMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    latitude,
+                                    longitude
+                                ), 18f
+                            )
+                        )
                     }
-                } catch (e: JSONException) {
-                    Log.e("rrr", "Failed to parse JSON response", e)
-                    runOnUiThread {
-                        AlertDialog.Builder(this@MainActivity)
-                            .setTitle(resources.getString(R.string.text_error))
-                            .setMessage(resources.getString(R.string.text_could_not_find_nearby_stations))
-                            .setNeutralButton(resources.getString(R.string.text_ok)) { _, _ -> }
-                            .show()
-                    }
-
+                }
+            } catch (e: JSONException) {
+                Log.e("===", "Failed to parse JSON response", e)
+                runOnUiThread {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle(resources.getString(R.string.text_error))
+                        .setMessage(resources.getString(R.string.text_could_not_find_nearby_stations))
+                        .setNeutralButton(resources.getString(R.string.text_ok)) { _, _ -> }
+                        .show()
                 }
             }
-        })
+        }
     }
 
     override fun onBackPressed() {}

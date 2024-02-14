@@ -1,6 +1,7 @@
 package com.example.powerpath.api
 
 import android.util.Log
+import com.example.powerpath.DataManager
 import com.google.android.gms.maps.model.LatLng
 import okhttp3.Call
 import okhttp3.Callback
@@ -226,6 +227,35 @@ class Network {
                     Log.d("===", "get pins error: ${response.message}")
                 } else {
                     val responseData = response.body?.string()
+
+                    if (responseData != null) {
+                        onSuccess(responseData)
+                    }
+                }
+            }
+        })
+    }
+
+    fun getClosestStation(location: LatLng, onSuccess: (String) -> Unit) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/closest_charging_station?latitude=${location.latitude}&longitude=${location.longitude}&range=10&email=${DataManager.email}"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "closest station error: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d("===", "closest station error: ${response.message}")
+                } else {
+                    val responseData = response.body?.string()
+                    Log.d("===", "closest station success: $responseData")
 
                     if (responseData != null) {
                         onSuccess(responseData)
