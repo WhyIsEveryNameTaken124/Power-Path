@@ -10,7 +10,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -20,19 +19,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.powerpath.api.Network
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okio.IOException
-import org.json.JSONObject
 
 
 class SignInActivity : AppCompatActivity() {
@@ -197,7 +183,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doSignUp() {
-        signup(etEmail.text.toString(), etPassword.text.toString(), {
+        val network = Network()
+        network.signup(etEmail.text.toString(), etPassword.text.toString(), {
             DataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
@@ -229,39 +216,6 @@ class SignInActivity : AppCompatActivity() {
         }, {
             runOnUiThread {
                 Toast.makeText(this@SignInActivity, "login error", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun signup(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/signup"
-        val jsonBody = JSONObject().apply {
-            put("email", email)
-            put("password", password)
-        }
-
-        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d("===", "signup error: $e")
-                onError.invoke()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Log.d("===", "signup error: ${response.message}")
-                    onError.invoke()
-                } else {
-                    Log.d("===", "signup successful: ${response.message}")
-                    onSuccess.invoke()
-                }
             }
         })
     }

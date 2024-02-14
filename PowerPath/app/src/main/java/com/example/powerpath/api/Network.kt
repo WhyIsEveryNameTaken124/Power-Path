@@ -144,4 +144,36 @@ class Network {
         })
     }
 
+    fun signup(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/signup"
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("password", password)
+        }
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "signup error: $e")
+                onError.invoke()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d("===", "signup error: ${response.message}")
+                    onError.invoke()
+                } else {
+                    Log.d("===", "signup successful: ${response.message}")
+                    onSuccess.invoke()
+                }
+            }
+        })
+    }
 }
