@@ -3,6 +3,8 @@ package com.example.powerpath.api
 import android.util.Log
 import com.example.powerpath.DataManager
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -263,5 +265,32 @@ class Network {
                 }
             }
         })
+    }
+
+    suspend fun getPath(start: String, destination: String): String? {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_path?start=$start&destination=$destination"
+
+        val request = Request.Builder()
+            .url(url)
+            .get()
+            .build()
+
+        val client = OkHttpClient()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    Log.d("===", "getPath success")
+                    response.body?.string()
+                } else {
+                    Log.d("===", "getPath error: HTTP error code: ${response.code}")
+                    null
+                }
+            } catch (e: IOException) {
+                Log.d("===", "getPath error: $e")
+                null
+            }
+        }
     }
 }

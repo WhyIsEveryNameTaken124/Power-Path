@@ -245,29 +245,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private suspend fun getPath(start: String, destination: String): String? {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_path?start=$start&destination=$destination"
-
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-
-        val client = OkHttpClient()
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val response = client.newCall(request).execute()
-                if (response.isSuccessful) {
-                    response.body?.string()
-                } else {
-                    Log.d("===", "getPath error: HTTP error code: ${response.code}")
-                    null
-                }
-            } catch (e: IOException) {
-                Log.d("===", "getPath error: $e")
-                null
-            }
-        }
+        val network = Network()
+        return network.getPath(start, destination)
     }
     private fun savePin(email: String, name: String, latitude: Double, longitude: Double) {
         val network = Network()
