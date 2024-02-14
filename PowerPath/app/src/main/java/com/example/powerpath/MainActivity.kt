@@ -275,42 +275,25 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun getPins(email: String) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_pins?email=$email"
+        val network = Network()
+        network.getPins(email) { responseData ->
 
-        val request = Request.Builder()
-            .url(url)
-            .build()
+            val jsonArray = JSONArray(responseData)
 
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.d("===", "get pins error: $e")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (!response.isSuccessful) {
-                    Log.d("===", "get pins error: ${response.message}")
-                } else {
-                    val responseData = response.body?.string()
-
-                    val jsonArray = JSONArray(responseData)
-
-                    for (i in 0 until jsonArray.length()) {
-                        val jsonObject = jsonArray.getJSONObject(i)
-                        val pin = Pin(
-                            id = jsonObject.getInt("id"),
-                            latitude = jsonObject.getDouble("latitude"),
-                            longitude = jsonObject.getDouble("longitude"),
-                            name = jsonObject.getString("name"),
-                            user_id = jsonObject.getInt("user_id")
-                        )
-                        runOnUiThread {
-                            setPin(LatLng(pin.latitude, pin.longitude), pin.name)
-                        }
-                    }
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val pin = Pin(
+                    id = jsonObject.getInt("id"),
+                    latitude = jsonObject.getDouble("latitude"),
+                    longitude = jsonObject.getDouble("longitude"),
+                    name = jsonObject.getString("name"),
+                    user_id = jsonObject.getInt("user_id")
+                )
+                runOnUiThread {
+                    setPin(LatLng(pin.latitude, pin.longitude), pin.name)
                 }
             }
-        })
+        }
     }
 
     private fun startFindRouteTask(email: String, start: String, destination: String, durability: Int) {

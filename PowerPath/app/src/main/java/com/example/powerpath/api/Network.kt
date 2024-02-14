@@ -1,6 +1,7 @@
 package com.example.powerpath.api
 
 import android.util.Log
+import com.google.android.gms.maps.model.LatLng
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -134,7 +135,6 @@ class Network {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
@@ -203,6 +203,33 @@ class Network {
                     Log.d("===", "save pin error: ${response.message}")
                 } else {
                     Log.d("===", "save pin successful: ${response.message}")
+                }
+            }
+        })
+    }
+
+    fun getPins(email: String, onSuccess: (String) -> Unit) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/get_pins?email=$email"
+
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "get pins error: $e")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    Log.d("===", "get pins error: ${response.message}")
+                } else {
+                    val responseData = response.body?.string()
+
+                    if (responseData != null) {
+                        onSuccess(responseData)
+                    }
                 }
             }
         })
