@@ -197,16 +197,21 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doSignUp() {
-        signup(etEmail.text.toString(), etPassword.text.toString())
-        DataManager.email = etEmail.text.toString()
-        if (cbRememberMe.isChecked) {
-            val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            editor.putString("email", etEmail.text.toString())
-            editor.apply()
-        }
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
+        signup(etEmail.text.toString(), etPassword.text.toString(), {
+            DataManager.email = etEmail.text.toString()
+            if (cbRememberMe.isChecked) {
+                val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString("email", etEmail.text.toString())
+                editor.apply()
+            }
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }, {
+            runOnUiThread {
+                Toast.makeText(this@SignInActivity, "signup error", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun doLogIn() {
@@ -228,7 +233,7 @@ class SignInActivity : AppCompatActivity() {
         })
     }
 
-    private fun signup(email :String, password: String) {
+    private fun signup(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
         val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/signup"
         val jsonBody = JSONObject().apply {
             put("email", email)
@@ -246,16 +251,16 @@ class SignInActivity : AppCompatActivity() {
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.d("===", "signup error: $e")
-                //TODO
+                onError.invoke()
             }
 
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) {
                     Log.d("===", "signup error: ${response.message}")
-                    //TODO
+                    onError.invoke()
                 } else {
                     Log.d("===", "signup successful: ${response.message}")
-                    //TODO
+                    onSuccess.invoke()
                 }
             }
         })
