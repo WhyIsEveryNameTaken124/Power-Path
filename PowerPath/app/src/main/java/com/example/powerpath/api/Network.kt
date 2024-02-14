@@ -113,4 +113,35 @@ class Network {
         })
     }
 
+    fun login(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/login"
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("password", password)
+        }
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                onError()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body?.string()
+                if (response.isSuccessful) {
+                    onSuccess()
+                } else {
+                    onError()
+                }
+            }
+        })
+    }
+
 }

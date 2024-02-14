@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.powerpath.api.Network
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -209,7 +210,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doLogIn() {
-        login(etEmail.text.toString(), etPassword.text.toString(), {
+        val network = Network()
+        network.login(etEmail.text.toString(), etPassword.text.toString(), {
             DataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
@@ -254,37 +256,6 @@ class SignInActivity : AppCompatActivity() {
                 } else {
                     Log.d("===", "signup successful: ${response.message}")
                     //TODO
-                }
-            }
-        })
-    }
-
-    private fun login(email :String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/login"
-        val jsonBody = JSONObject().apply {
-            put("email", email)
-            put("password", password)
-        }
-
-        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .build()
-
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                //TODO error
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body?.string()
-                if (response.isSuccessful) {
-                    onSuccess()
-                } else {
-                    onError()
                 }
             }
         })
