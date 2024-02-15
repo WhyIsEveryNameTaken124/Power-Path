@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     override fun calcDirections(location: String) {
         getLastLocation { latLng ->
-            startFindRouteTask(DataManager.email, "${latLng.latitude},${latLng.longitude}", location, 200000)
+            startFindRouteTask(DataManager.email, "${latLng.latitude},${latLng.longitude}", location)
         }
     }
 
@@ -275,9 +275,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         }
     }
 
-    private fun startFindRouteTask(email: String, start: String, destination: String, durability: Int) {
+    private fun startFindRouteTask(email: String, start: String, destination: String) {
         val client = OkHttpClient()
-        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/find_route?email=$email&start=$start&destination=$destination&durability=$durability"
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/find_route?email=$email&start=$start&destination=$destination"
 
         val request = Request.Builder()
             .url(url)
