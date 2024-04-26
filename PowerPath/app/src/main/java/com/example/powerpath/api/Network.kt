@@ -293,4 +293,44 @@ class Network {
             }
         }
     }
+
+    fun deletePin(email: String, name: String, latitude: Double, longitude: Double, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val url = "https://power-path-backend-3e6dc9fdeee0.herokuapp.com/delete_pin"
+
+        val jsonBody = JSONObject().apply {
+            put("email", email)
+            put("name", name)
+            put("latitude", String.format("%.6f", latitude))
+            put("longitude", String.format("%.6f", longitude))
+        }
+
+        Log.d("===", "Sending delete request with: $jsonBody")
+
+        val requestBody = jsonBody.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d("===", "Network error on delete pin: $e")
+                onFailure("Network error: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (!response.isSuccessful) {
+                    val message = response.body?.string() ?: "Unknown error"
+                    Log.d("===", "Failed to delete pin: $message")
+                    onFailure("Failed to delete pin: HTTP error code: ${response.code} - $message")
+                } else {
+                    Log.d("===", "Pin deleted successfully")
+                    onSuccess()
+                }
+            }
+        })
+    }
+
 }
