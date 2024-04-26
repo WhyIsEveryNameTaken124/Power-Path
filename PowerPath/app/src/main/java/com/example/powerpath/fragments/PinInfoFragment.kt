@@ -5,8 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import com.example.powerpath.DataManager
 import com.example.powerpath.R
+import com.example.powerpath.api.Network
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -39,6 +42,10 @@ class PinInfoFragment : BottomSheetDialogFragment() {
             dismiss()
         }
 
+        view.findViewById<ImageView>(R.id.btnDelete).setOnClickListener {
+            val network = Network()
+            network.deletePin(DataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
+        }
     }
 
     companion object {
