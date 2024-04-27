@@ -76,12 +76,20 @@ class FiltersActivity : AppCompatActivity() {
 
         val powerOptions = arrayOf("3kW", "7kW", "18kW", "43kW", "100kW", "350kW")
         binding.tvValueFrom.setOnClickListener {
+            val maxPower = selectedMaxPower + 1
+            val filteredOptions = if (maxPower == null) powerOptions else powerOptions.filter {
+                val power = it.removeSuffix("kW").toInt()
+                maxPower > power
+            }.toTypedArray()
+
+            if (filteredOptions.isEmpty()) {
+                return@setOnClickListener
+            }
+
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setTitle(resources.getString(R.string.text_select_minimum_power))
-            builder.setSingleChoiceItems(powerOptions, -1
-            ) { dialog, item ->
-                val pattern = Regex("""(\d+)kW""")
-                selectedMinPower = pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
+            builder.setSingleChoiceItems(filteredOptions, -1) { dialog, item ->
+                selectedMinPower = filteredOptions[item].removeSuffix("kW").toInt()
                 binding.tvValueFrom.textSize = 18f
                 binding.tvValueFrom.text = selectedMinPower.toString()
                 dialog.dismiss()
@@ -89,14 +97,22 @@ class FiltersActivity : AppCompatActivity() {
             val alert: AlertDialog = builder.create()
             alert.show()
         }
+
         binding.tvValueTo.setOnClickListener {
+            val minPower = selectedMinPower - 1
+            val filteredOptions = if (minPower == null) powerOptions else powerOptions.filter {
+                val power = it.removeSuffix("kW").toInt()
+                power > minPower
+            }.toTypedArray()
+
+            if (filteredOptions.isEmpty()) {
+                return@setOnClickListener
+            }
+
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setTitle(resources.getString(R.string.text_select_maximum_power))
-            builder.setSingleChoiceItems(
-                powerOptions, -1
-            ) { dialog, item ->
-                val pattern = Regex("""(\d+)kW""")
-                selectedMaxPower = pattern.find(powerOptions[item])?.groups?.get(1)?.value?.toInt()!!
+            builder.setSingleChoiceItems(filteredOptions, -1) { dialog, item ->
+                selectedMaxPower = filteredOptions[item].removeSuffix("kW").toInt()
                 binding.tvValueTo.textSize = 18f
                 binding.tvValueTo.text = selectedMaxPower.toString()
                 dialog.dismiss()
