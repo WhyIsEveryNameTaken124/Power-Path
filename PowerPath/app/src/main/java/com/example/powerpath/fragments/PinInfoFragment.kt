@@ -1,5 +1,6 @@
 package com.example.powerpath.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,9 @@ class PinInfoFragment : BottomSheetDialogFragment() {
         val latLng = LatLng(latitude, longitude)
         view.findViewById<TextView>(R.id.tvPinTitle).text = text
         view.findViewById<TextView>(R.id.tvCoordinates).text = "$latitude\n$longitude"
+
+        view.findViewById<Button>(R.id.button_directions).setTextColor(Color.WHITE)
+        view.findViewById<Button>(R.id.button).setTextColor(Color.WHITE)
 
         view.findViewById<Button>(R.id.button).setOnClickListener {
             (activity as? OnButtonPressedListener)?.showSavePinDialog(latLng, true)
