@@ -8,6 +8,7 @@ import retrofit2.Response
 import android.util.Log
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
+import com.example.powerpath.retrofitApi.dataClasses.PinRequest
 import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import com.example.powerpath.retrofitApi.dataClasses.UserFilterRetrofit
 
@@ -155,4 +156,35 @@ class ApiServiceImpl {
             }
         })
     }
+
+    fun savePin(email: String, name: String, latitude: Double, longitude: Double) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+        val pinRequest = PinRequest(
+            email = email,
+            name = name,
+            latitude = String.format("%.6f", latitude).toDouble(),
+            longitude = String.format("%.6f", longitude).toDouble()
+        )
+
+        val call = service.savePin(pinRequest)
+        call.enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("===", "save pin error: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d("===", "save pin successful: ${response.message()}")
+                } else {
+                    Log.d("===", "save pin error: ${response.message()}")
+                }
+            }
+        })
+    }
+
 }

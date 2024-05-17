@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.powerpath.api.*
 import com.example.powerpath.fragments.PinInfoFragment
+import com.example.powerpath.retrofitApi.ApiServiceImpl
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -249,8 +250,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         return network.getPath(start, destination)
     }
     private fun savePin(email: String, name: String, latitude: Double, longitude: Double) {
-        val network = Network()
-        network.savePin(email, name, latitude, longitude)
+        val apiService = ApiServiceImpl()
+        apiService.savePin(email, name, latitude, longitude)
     }
 
     private fun getPins(email: String) {

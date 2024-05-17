@@ -2,6 +2,7 @@ package com.example.powerpath.retrofitApi
 
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
+import com.example.powerpath.retrofitApi.dataClasses.PinRequest
 import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import retrofit2.Call
 import retrofit2.http.GET
@@ -23,7 +24,8 @@ interface ApiService {
     @POST("signup")
     fun signup(@Body signupRequest: SignupRequest): Call<Void>
 
-
+    @POST("save_pin")
+    fun savePin(@Body pinRequest: PinRequest): Call<Void>
 
 
 
