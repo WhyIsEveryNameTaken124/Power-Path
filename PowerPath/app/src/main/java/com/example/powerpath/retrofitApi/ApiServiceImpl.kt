@@ -7,6 +7,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.util.Log
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
+import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
+import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import com.example.powerpath.retrofitApi.dataClasses.UserFilterRetrofit
 
 class ApiServiceImpl {
@@ -93,6 +95,62 @@ class ApiServiceImpl {
                     Log.d("===", "save filters error: ${response.message()}")
                 } else {
                     Log.d("===", "save filters successful: ${response.message()}")
+                }
+            }
+        })
+    }
+
+    fun login(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+        val loginRequest = LoginRequest(email, password)
+
+        val call = service.login(loginRequest)
+        call.enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("===", "login error: ${t.message}")
+                onError()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d("===", "login successful")
+                    onSuccess()
+                } else {
+                    Log.d("===", "login error: ${response.message()}")
+                    onError()
+                }
+            }
+        })
+    }
+
+    fun signup(email: String, password: String, onSuccess: () -> Unit, onError: () -> Unit) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+        val signupRequest = SignupRequest(email, password)
+
+        val call = service.signup(signupRequest)
+        call.enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("===", "signup error: ${t.message}")
+                onError()
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d("===", "signup successful: ${response.message()}")
+                    onSuccess()
+                } else {
+                    Log.d("===", "signup error: ${response.message()}")
+                    onError()
                 }
             }
         })

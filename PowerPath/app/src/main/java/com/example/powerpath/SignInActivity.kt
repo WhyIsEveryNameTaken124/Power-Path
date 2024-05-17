@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.powerpath.api.Network
+import com.example.powerpath.retrofitApi.ApiServiceImpl
 
 
 class SignInActivity : AppCompatActivity() {
@@ -183,8 +184,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doSignUp() {
-        val network = Network()
-        network.signup(etEmail.text.toString(), etPassword.text.toString(), {
+        val apiService = ApiServiceImpl()
+        apiService.signup(etEmail.text.toString(), etPassword.text.toString(), {
             DataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
@@ -202,8 +203,8 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun doLogIn() {
-        val network = Network()
-        network.login(etEmail.text.toString(), etPassword.text.toString(), {
+        val apiService = ApiServiceImpl()
+        apiService.login(etEmail.text.toString(), etPassword.text.toString(), {
             DataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)

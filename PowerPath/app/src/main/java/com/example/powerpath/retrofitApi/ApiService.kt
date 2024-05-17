@@ -1,6 +1,8 @@
 package com.example.powerpath.retrofitApi
 
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
+import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
+import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,4 +16,18 @@ interface ApiService {
 
     @POST("save_filters")
     fun saveFilters(@Body filters: FiltersRequest): Call<Void>
+
+    @POST("login")
+    fun login(@Body loginRequest: LoginRequest): Call<Void>
+
+    @POST("signup")
+    fun signup(@Body signupRequest: SignupRequest): Call<Void>
+
+
+
+
+
+
+
+
 }
