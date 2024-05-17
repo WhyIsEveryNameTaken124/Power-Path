@@ -17,10 +17,10 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import com.example.powerpath.api.Network
 import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
 import com.example.powerpath.fragments.PickNetworksDialogFragment
+import com.example.powerpath.retrofitApi.ApiServiceImpl
 
 
 class FiltersActivity : AppCompatActivity() {
@@ -287,21 +287,22 @@ class FiltersActivity : AppCompatActivity() {
         return isValid
     }
 
-    private fun getFilters(email: String) {
-        val network = Network()
-        network.getFilters(email, {userFilter ->
+    private fun getFilters(email: String) {  //TODO figure out why it's being called twice, dumbass
+        val apiService = ApiServiceImpl()
+
+        apiService.getFilters(email, {userFilter ->
             runOnUiThread {
                 binding.tvValueFrom.textSize = 18f
                 binding.tvValueTo.textSize = 18f
                 binding.etDurability.setText((userFilter.durability/1000).toString())
             }
-            binding.tvValueFrom.text = userFilter.power_range_min.toString()
-            selectedMinPower = userFilter.power_range_min
-            binding.tvValueTo.text = userFilter.power_range_max.toString()
-            selectedMaxPower = userFilter.power_range_max
-            DataManager.connectorType = when (userFilter.connector_type) {
+            binding.tvValueFrom.text = userFilter.powerRangeMin.toString()
+            selectedMinPower = userFilter.powerRangeMin
+            binding.tvValueTo.text = userFilter.powerRangeMax.toString()
+            selectedMaxPower = userFilter.powerRangeMax
+            DataManager.connectorType = when (userFilter.connectorType) {
                 "CCS (Type 1)" -> "CCS Combo Type 1"
-                 "CCS (Type 2)" -> "CCS Combo Type 2"
+                "CCS (Type 2)" -> "CCS Combo Type 2"
                 "CHAdeMO" -> "CHAdeMO"
                 "GB-T DC - GB/T 20234" -> "GB/T"
                 "NACS / Tesla Supercharger" -> "Supercharger"
@@ -310,14 +311,14 @@ class FiltersActivity : AppCompatActivity() {
                 else -> ""
             }
             DataManager.selectedNetworks = userFilter.networks.toMutableList()
-            when (userFilter.minimal_rating) {
+            when (userFilter.minimalRating) {
                 2 -> binding.rating2.isChecked = true
                 3 -> binding.rating3.isChecked = true
                 4 -> binding.rating4.isChecked = true
                 5 -> binding.rating5.isChecked = true
                 else -> binding.ratingAny.isChecked = true
             }
-            when (userFilter.station_count) {
+            when (userFilter.stationCount) {
                 2 -> binding.station2.isChecked = true
                 4 -> binding.station4.isChecked = true
                 6 -> binding.station6.isChecked = true
@@ -331,8 +332,8 @@ class FiltersActivity : AppCompatActivity() {
     }
 
     private fun saveFilters(email :String, powerRange: Pair<Int, Int>, connectorType: String, networks: List<String>, minRating: Int, minStationCount: Int, paid: Boolean, free: Boolean, durability: Int) {
-        val network = Network()
-        network.saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free, durability)
+        val apiService = ApiServiceImpl()
+        apiService.saveFilters(email, powerRange, connectorType, networks, minRating, minStationCount, paid, free, durability)
     }
 
     private fun onSave() {
