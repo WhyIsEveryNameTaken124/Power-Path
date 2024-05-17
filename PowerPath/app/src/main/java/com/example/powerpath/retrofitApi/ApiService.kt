@@ -27,6 +27,9 @@ interface ApiService {
     @POST("save_pin")
     fun savePin(@Body pinRequest: PinRequest): Call<Void>
 
+    @GET("get_pins")
+    fun getPins(@Query("email") email: String): Call<String>
+
 
 
 

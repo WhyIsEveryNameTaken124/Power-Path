@@ -11,6 +11,10 @@ import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
 import com.example.powerpath.retrofitApi.dataClasses.PinRequest
 import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import com.example.powerpath.retrofitApi.dataClasses.UserFilterRetrofit
+import okhttp3.ResponseBody
+import retrofit2.Converter
+import java.lang.reflect.Type
+
 
 class ApiServiceImpl {
     fun getFilters(email: String, onSuccess: (userFilter: UserFilterRetrofit) -> Unit, onFailure: (e: Exception) -> Unit) {
@@ -182,6 +186,44 @@ class ApiServiceImpl {
                     Log.d("===", "save pin successful: ${response.message()}")
                 } else {
                     Log.d("===", "save pin error: ${response.message()}")
+                }
+            }
+        })
+    }
+
+    class StringConverterFactory : retrofit2.Converter.Factory() {
+        override fun responseBodyConverter(type: Type, annotations: Array<Annotation>, retrofit: Retrofit): Converter<ResponseBody, *>? {
+            return if (type == String::class.java) {
+                retrofit2.Converter<ResponseBody, String> { it.string() }
+            } else {
+                null
+            }
+        }
+    }
+
+    fun getPins(email: String, onSuccess: (String) -> Unit) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(StringConverterFactory())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+        val call = service.getPins(email)
+
+        call.enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("===", "get pins error: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { responseData ->
+                        onSuccess(responseData)
+                    } ?: run {
+                        Log.d("===", "get pins error: response body is null")
+                    }
+                } else {
+                    Log.d("===", "get pins error: ${response.message()}")
                 }
             }
         })

@@ -255,8 +255,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun getPins(email: String) {
-        val network = Network()
-        network.getPins(email) { responseData ->
+        val apiService = ApiServiceImpl()
+        apiService.getPins(email) { responseData ->
 
             val jsonArray = JSONArray(responseData)
 
