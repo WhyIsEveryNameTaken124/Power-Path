@@ -38,7 +38,11 @@ interface ApiService {
         @Query("email") email: String
     ): Call<String>
 
-
+    @GET("get_path")
+    suspend fun getPath(
+        @Query("start") start: String,
+        @Query("destination") destination: String
+    ): String
 
 
 }

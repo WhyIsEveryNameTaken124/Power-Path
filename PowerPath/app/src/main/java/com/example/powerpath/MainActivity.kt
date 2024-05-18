@@ -33,14 +33,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.*
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okio.IOException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -246,8 +240,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private suspend fun getPath(start: String, destination: String): String? {
-        val network = Network()
-        return network.getPath(start, destination)
+        val apiService = ApiServiceImpl()
+        return apiService.getPath(start, destination)
     }
     private fun savePin(email: String, name: String, latitude: Double, longitude: Double) {
         val apiService = ApiServiceImpl()

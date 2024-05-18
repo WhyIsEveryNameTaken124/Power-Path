@@ -13,6 +13,8 @@ import com.example.powerpath.retrofitApi.dataClasses.PinRequest
 import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import com.example.powerpath.retrofitApi.dataClasses.UserFilterRetrofit
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import java.lang.reflect.Type
@@ -264,5 +266,23 @@ class ApiServiceImpl {
         })
     }
 
+    suspend fun getPath(start: String, destination: String): String? {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(StringConverterFactory())
+            .build()
 
+        val service = retrofit.create(ApiService::class.java)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = service.getPath(start, destination)
+                Log.d("===", "getPath success")
+                response
+            } catch (e: Exception) {
+                Log.d("===", "getPath error: $e")
+                null
+            }
+        }
+    }
 }
