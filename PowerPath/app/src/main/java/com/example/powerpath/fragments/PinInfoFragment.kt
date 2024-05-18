@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.powerpath.DataManager
 import com.example.powerpath.R
-import com.example.powerpath.api.Network
+import com.example.powerpath.retrofitApi.ApiServiceImpl
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -47,7 +47,7 @@ class PinInfoFragment : BottomSheetDialogFragment() {
         }
 
         view.findViewById<ImageView>(R.id.btnDelete).setOnClickListener {
-            val network = Network()
+            val network = ApiServiceImpl()
             network.deletePin(DataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
         }
     }

@@ -1,5 +1,6 @@
 package com.example.powerpath.retrofitApi
 
+import com.example.powerpath.retrofitApi.dataClasses.DeletePinRequest
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
 import com.example.powerpath.retrofitApi.dataClasses.PinRequest
@@ -44,5 +45,6 @@ interface ApiService {
         @Query("destination") destination: String
     ): String
 
-
+    @POST("delete_pin")
+    fun deletePin(@Body deletePinRequest: DeletePinRequest): Call<Void>
 }

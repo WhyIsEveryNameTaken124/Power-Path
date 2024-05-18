@@ -7,6 +7,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.util.Log
 import com.example.powerpath.DataManager
+import com.example.powerpath.retrofitApi.dataClasses.DeletePinRequest
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
 import com.example.powerpath.retrofitApi.dataClasses.PinRequest
@@ -284,5 +285,40 @@ class ApiServiceImpl {
                 null
             }
         }
+    }
+
+    fun deletePin(email: String, name: String, latitude: Double, longitude: Double, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+
+        val pinRequest = DeletePinRequest(
+            email = email,
+            name = name,
+            latitude = String.format("%.6f", latitude),
+            longitude = String.format("%.6f", longitude)
+        )
+
+        val call = service.deletePin(pinRequest)
+
+        call.enqueue(object : Callback<Void> {
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.d("===", "Network error on delete pin: ${t.message}")
+                onFailure("Network error: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    Log.d("===", "Pin deleted successfully")
+                    onSuccess()
+                } else {
+                    val message = response.errorBody()?.string() ?: "Unknown error"
+                    Log.d("===", "Failed to delete pin: $message")
+                }
+            }
+        })
     }
 }

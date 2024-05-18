@@ -443,22 +443,5 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         }
     }
 
-    private fun deletePin(email: String, name: String, latitude: Double, longitude: Double) {
-        val network = Network()
-        network.deletePin(email, name, latitude, longitude,
-            onSuccess = {
-                runOnUiThread {
-//                    refresh ui
-                    Log.d("delete", "success")
-                }
-            },
-            onFailure = { exception ->
-                runOnUiThread {
-                    Log.d("delete", "error $exception")
-                }
-            }
-        )
-    }
-
     override fun onBackPressed() {}
 }
