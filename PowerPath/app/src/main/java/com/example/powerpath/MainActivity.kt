@@ -417,8 +417,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     }
 
     private fun getClosestStation(location: LatLng) {
-        val network = Network()
-        network.getClosestStation(location) { responseData ->
+        val apiService = ApiServiceImpl()
+        apiService.getClosestStation(location) { responseData ->
             try {
                 val jsonObject = JSONObject(responseData)
                 val latitude = jsonObject.getDouble("latitude")

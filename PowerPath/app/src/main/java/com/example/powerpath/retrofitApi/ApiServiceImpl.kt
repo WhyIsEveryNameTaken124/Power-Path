@@ -6,11 +6,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Log
+import com.example.powerpath.DataManager
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
 import com.example.powerpath.retrofitApi.dataClasses.PinRequest
 import com.example.powerpath.retrofitApi.dataClasses.SignupRequest
 import com.example.powerpath.retrofitApi.dataClasses.UserFilterRetrofit
+import com.google.android.gms.maps.model.LatLng
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import java.lang.reflect.Type
@@ -191,10 +193,10 @@ class ApiServiceImpl {
         })
     }
 
-    class StringConverterFactory : retrofit2.Converter.Factory() {
+    class StringConverterFactory : Converter.Factory() {
         override fun responseBodyConverter(type: Type, annotations: Array<Annotation>, retrofit: Retrofit): Converter<ResponseBody, *>? {
             return if (type == String::class.java) {
-                retrofit2.Converter<ResponseBody, String> { it.string() }
+                Converter<ResponseBody, String> { it.string() }
             } else {
                 null
             }
@@ -228,5 +230,39 @@ class ApiServiceImpl {
             }
         })
     }
+
+    fun getClosestStation(location: LatLng, onSuccess: (String) -> Unit) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
+            .addConverterFactory(StringConverterFactory())
+            .build()
+
+        val service = retrofit.create(ApiService::class.java)
+        val call = service.getClosestStation(
+            latitude = location.latitude,
+            longitude = location.longitude,
+            email = DataManager.email
+        )
+
+        call.enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("===", "closest station error: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { responseData ->
+                        Log.d("===", "closest station success: $responseData")
+                        onSuccess(responseData)
+                    } ?: run {
+                        Log.d("===", "closest station error: response body is null")
+                    }
+                } else {
+                    Log.d("===", "closest station error: ${response.message()}")
+                }
+            }
+        })
+    }
+
 
 }

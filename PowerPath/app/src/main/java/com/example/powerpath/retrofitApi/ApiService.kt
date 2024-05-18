@@ -30,7 +30,13 @@ interface ApiService {
     @GET("get_pins")
     fun getPins(@Query("email") email: String): Call<String>
 
-
+    @GET("closest_charging_station")
+    fun getClosestStation(
+        @Query("latitude") latitude: Double,
+        @Query("longitude") longitude: Double,
+        @Query("range") range: Int = 10,
+        @Query("email") email: String
+    ): Call<String>
 
 
 
