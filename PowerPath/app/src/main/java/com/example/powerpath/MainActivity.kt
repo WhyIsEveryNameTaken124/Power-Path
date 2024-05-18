@@ -14,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
-import com.example.powerpath.api.*
 import com.example.powerpath.fragments.PinInfoFragment
 import com.example.powerpath.retrofitApi.ApiServiceImpl
+import com.example.powerpath.retrofitApi.dataClasses.Pin
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory

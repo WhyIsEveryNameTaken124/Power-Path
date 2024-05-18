@@ -47,8 +47,8 @@ class PinInfoFragment : BottomSheetDialogFragment() {
         }
 
         view.findViewById<ImageView>(R.id.btnDelete).setOnClickListener {
-            val network = ApiServiceImpl()
-            network.deletePin(DataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
+            val apiService = ApiServiceImpl()
+            apiService.deletePin(DataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
         }
     }
 

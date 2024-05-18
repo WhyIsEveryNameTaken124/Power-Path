@@ -18,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.powerpath.api.Network
 import com.example.powerpath.retrofitApi.ApiServiceImpl
 
 
