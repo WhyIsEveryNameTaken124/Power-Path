@@ -7,13 +7,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.powerpath.DataManager
 import com.example.powerpath.R
 import com.example.powerpath.classes.ConnectorItem
+import com.example.powerpath.userData.NewDataManager
 
-class ConnectorAdapter (private val items: List<ConnectorItem>, private val itemClickListener: (Int) -> Unit) :
+class ConnectorAdapter (private val items: List<ConnectorItem>, private val dataManager: NewDataManager, private val itemClickListener: (Int) -> Unit) :
     RecyclerView.Adapter<ConnectorAdapter.ViewHolder>() {
-    var selectedItemText: String? = DataManager.connectorType
+    var selectedItemText: String? = dataManager.connectorType
 
     class ViewHolder(itemView: View, clickListener: (Int) -> Unit) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)

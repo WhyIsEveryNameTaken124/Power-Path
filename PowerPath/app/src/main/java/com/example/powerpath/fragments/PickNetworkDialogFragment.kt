@@ -7,15 +7,21 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import androidx.fragment.app.DialogFragment
-import com.example.powerpath.DataManager
 import com.example.powerpath.R
+import com.example.powerpath.userData.NewDataManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PickNetworksDialogFragment : DialogFragment() {
 
+    @Inject
+    lateinit var dataManager: NewDataManager
     private lateinit var searchEditText: EditText
     private lateinit var listViewNetworks: ListView
     private lateinit var titleTextView: TextView
-    private val selectedNetworks = DataManager.selectedNetworks
+    private val selectedNetworks by lazy { dataManager.selectedNetworks }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -61,7 +67,7 @@ class PickNetworksDialogFragment : DialogFragment() {
         })
 
         builder.setPositiveButton("Done") { _, _ ->
-            DataManager.selectedNetworks = selectedNetworks
+            dataManager.selectedNetworks = selectedNetworks
             dismiss()
         }
 

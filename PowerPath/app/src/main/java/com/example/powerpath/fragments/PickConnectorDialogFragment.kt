@@ -5,15 +5,20 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
-import com.example.powerpath.DataManager
 import com.example.powerpath.R
 import com.example.powerpath.adapters.ConnectorAdapter
 import com.example.powerpath.classes.ConnectorItem
+import com.example.powerpath.userData.NewDataManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PickConnectorDialogFragment : DialogFragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var selectedConnector: String
+    @Inject
+    lateinit var dataManager: NewDataManager
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -32,7 +37,7 @@ class PickConnectorDialogFragment : DialogFragment() {
             ConnectorItem(R.mipmap.type2mennekes, "Type 2 Mennekes")
         )
 
-        val adapter = ConnectorAdapter(items) {
+        val adapter = ConnectorAdapter(items, dataManager) {
             //TODO make selected
             selectedConnector = ""
         }
@@ -40,7 +45,7 @@ class PickConnectorDialogFragment : DialogFragment() {
 
         builder.setPositiveButton("Done") { _, _ ->
             selectedConnector = adapter.selectedItemText.toString()
-            DataManager.connectorType = selectedConnector
+            dataManager.connectorType = selectedConnector
             dismiss()
         }
 

@@ -19,8 +19,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.powerpath.retrofitApi.ApiServiceImpl
+import com.example.powerpath.userData.NewDataManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var tvTitle: TextView
@@ -34,6 +37,9 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var cbRememberMe: CheckBox
     private lateinit var buttonSignUp: Button
     private lateinit var tvLogIn: TextView
+
+    @Inject
+    lateinit var dataManager: NewDataManager
 
     private var mode = 0 //0 = signup, 1 = login
 
@@ -185,7 +191,7 @@ class SignInActivity : AppCompatActivity() {
     private fun doSignUp() {
         val apiService = ApiServiceImpl()
         apiService.signup(etEmail.text.toString(), etPassword.text.toString(), {
-            DataManager.email = etEmail.text.toString()
+            dataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
                 val editor = sharedPreferences.edit()
@@ -204,7 +210,7 @@ class SignInActivity : AppCompatActivity() {
     private fun doLogIn() {
         val apiService = ApiServiceImpl()
         apiService.login(etEmail.text.toString(), etPassword.text.toString(), {
-            DataManager.email = etEmail.text.toString()
+            dataManager.email = etEmail.text.toString()
             if (cbRememberMe.isChecked) {
                 val sharedPreferences = getSharedPreferences("PowerPathPrefs", MODE_PRIVATE)
                 val editor = sharedPreferences.edit()

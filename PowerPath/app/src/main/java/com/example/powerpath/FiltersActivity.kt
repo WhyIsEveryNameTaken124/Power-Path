@@ -21,8 +21,11 @@ import com.example.powerpath.databinding.ActivityFiltersBinding
 import com.example.powerpath.fragments.PickConnectorDialogFragment
 import com.example.powerpath.fragments.PickNetworksDialogFragment
 import com.example.powerpath.retrofitApi.ApiServiceImpl
+import com.example.powerpath.userData.NewDataManager
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class FiltersActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFiltersBinding
@@ -30,6 +33,8 @@ class FiltersActivity : AppCompatActivity() {
     private var selectedMaxPower: Int = 0
     private var selectedRating: Int = 0
     private var selectedStationCount: Int = 0
+    @Inject
+    lateinit var dataManager: NewDataManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +71,7 @@ class FiltersActivity : AppCompatActivity() {
             title = text
         }
         setupViews()
-        getFilters(DataManager.email)
+        getFilters(dataManager.email)
     }
 
     private fun setupViews() {
@@ -300,7 +305,7 @@ class FiltersActivity : AppCompatActivity() {
             selectedMinPower = userFilter.powerRangeMin
             binding.tvValueTo.text = userFilter.powerRangeMax.toString()
             selectedMaxPower = userFilter.powerRangeMax
-            DataManager.connectorType = when (userFilter.connectorType) {
+            dataManager.connectorType = when (userFilter.connectorType) {
                 "CCS (Type 1)" -> "CCS Combo Type 1"
                 "CCS (Type 2)" -> "CCS Combo Type 2"
                 "CHAdeMO" -> "CHAdeMO"
@@ -310,7 +315,7 @@ class FiltersActivity : AppCompatActivity() {
                 "Type 2" -> "Type 2 Mennekes"
                 else -> ""
             }
-            DataManager.selectedNetworks = userFilter.networks.toMutableList()
+            dataManager.selectedNetworks = userFilter.networks.toMutableList()
             when (userFilter.minimalRating) {
                 2 -> binding.rating2.isChecked = true
                 3 -> binding.rating3.isChecked = true
@@ -338,13 +343,13 @@ class FiltersActivity : AppCompatActivity() {
 
     private fun onSave() {
         if (!validateFilters()) return
-        val email = DataManager.email
+        val email = dataManager.email
         val powerRange = Pair(
             if (binding.tvValueFrom.text.toString() == "--") 0 else selectedMinPower,
             if (binding.tvValueTo.text.toString() == "--") 0 else selectedMaxPower
         )
-        val connectorType = DataManager.connectorType
-        val networks = DataManager.selectedNetworks
+        val connectorType = dataManager.connectorType
+        val networks = dataManager.selectedNetworks
         val minRating = selectedRating
         val minStationCount = selectedStationCount
         val paid = binding.checkBoxCard.isChecked

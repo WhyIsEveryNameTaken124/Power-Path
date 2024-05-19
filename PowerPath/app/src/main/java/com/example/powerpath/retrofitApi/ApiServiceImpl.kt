@@ -6,7 +6,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Log
-import com.example.powerpath.DataManager
 import com.example.powerpath.retrofitApi.dataClasses.DeletePinRequest
 import com.example.powerpath.retrofitApi.dataClasses.FiltersRequest
 import com.example.powerpath.retrofitApi.dataClasses.LoginRequest
@@ -234,7 +233,7 @@ class ApiServiceImpl {
         })
     }
 
-    fun getClosestStation(location: LatLng, onSuccess: (String) -> Unit) {
+    fun getClosestStation(location: LatLng, email: String, onSuccess: (String) -> Unit) {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://power-path-backend-3e6dc9fdeee0.herokuapp.com/")
             .addConverterFactory(StringConverterFactory())
@@ -244,7 +243,7 @@ class ApiServiceImpl {
         val call = service.getClosestStation(
             latitude = location.latitude,
             longitude = location.longitude,
-            email = DataManager.email
+            email = email
         )
 
         call.enqueue(object : Callback<String> {

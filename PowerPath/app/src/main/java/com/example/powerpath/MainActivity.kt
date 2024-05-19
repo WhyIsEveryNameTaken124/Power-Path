@@ -63,8 +63,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d("aaaaaaaaaaaaaaaaaaaaaaaaa", dataManager.email)
-
         window.statusBarColor = Color.TRANSPARENT
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         window.navigationBarColor = ContextCompat.getColor(this, R.color.black)
@@ -121,7 +119,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                 true
             }
 
-            getPins(DataManager.email)
+            getPins(dataManager.email)
         } else {
             ActivityCompat.requestPermissions(
                 this,
@@ -232,7 +230,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
                 removePin(location)
             }
             setPin(location, userInput)
-            savePin(DataManager.email, userInput, location.latitude, location.longitude)
+            savePin(dataManager.email, userInput, location.latitude, location.longitude)
         }
         builder.setNegativeButton(resources.getString(R.string.text_cancel)
         ) { dialog, _ -> dialog.cancel() }
@@ -241,7 +239,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     override fun calcDirections(location: String) {
         getLastLocation { latLng ->
-            startFindRouteTask(DataManager.email, "${latLng.latitude},${latLng.longitude}", location)
+            startFindRouteTask(dataManager.email, "${latLng.latitude},${latLng.longitude}", location)
         }
     }
 
@@ -418,7 +416,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
 
     private fun getClosestStation(location: LatLng) {
         val apiService = ApiServiceImpl()
-        apiService.getClosestStation(location) { responseData ->
+        apiService.getClosestStation(location, dataManager.email) { responseData ->
             try {
                 val jsonObject = JSONObject(responseData)
                 val latitude = jsonObject.getDouble("latitude")

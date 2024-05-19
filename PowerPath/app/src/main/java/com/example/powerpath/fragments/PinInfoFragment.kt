@@ -8,13 +8,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import com.example.powerpath.DataManager
 import com.example.powerpath.R
 import com.example.powerpath.retrofitApi.ApiServiceImpl
+import com.example.powerpath.userData.NewDataManager
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PinInfoFragment : BottomSheetDialogFragment() {
+
+    @Inject
+    lateinit var dataManager: NewDataManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,7 +54,7 @@ class PinInfoFragment : BottomSheetDialogFragment() {
 
         view.findViewById<ImageView>(R.id.btnDelete).setOnClickListener {
             val apiService = ApiServiceImpl()
-            apiService.deletePin(DataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
+            apiService.deletePin(dataManager.email, text, latitude, longitude, {dismiss()}, {dismiss()})
         }
     }
 
