@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.powerpath.fragments.PinInfoFragment
 import com.example.powerpath.retrofitApi.ApiServiceImpl
 import com.example.powerpath.retrofitApi.dataClasses.Pin
+import com.example.powerpath.userData.NewDataManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,14 +33,16 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.maps.android.PolyUtil
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.OnButtonPressedListener {
 
     private lateinit var filtersButton: FloatingActionButton
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     private val polylines = mutableListOf<Polyline>()
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    @Inject lateinit var dataManager: NewDataManager
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -58,6 +62,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, PinInfoFragment.On
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Log.d("aaaaaaaaaaaaaaaaaaaaaaaaa", dataManager.email)
 
         window.statusBarColor = Color.TRANSPARENT
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
